@@ -23,6 +23,11 @@
 # $4 [REQ] NO_WIP [0,1]
 # $5 [REQ] STATIC_LINKING [0,1]
 # $6 [REQ] LITE [0,1]
+# $7 [REQ] USE_VORBIS [0,1]
+# #8 [REQ] USE_THEORADEC [0,1]
+
+# TODO: Only dependencies set to 0 for certain platforms in Makefile are currently tested.
+#       Script to be improved to test all dependencies.
 
 set -e
 
@@ -62,6 +67,10 @@ for a in $_engines ; do
 		good_to_go=1
 		# Test NO_HIGH_DEF
 		[ $3 -eq 1 ] && [ $((echo ${!engine_deps_var} | grep -q highres); echo $?) -eq 0 ]  && good_to_go=0
+		# Test USE_VORBIS
+		[ $7 -eq 0 ] && [ $((echo ${!engine_deps_var} | grep -q vorbis); echo $?) -eq 0 ]  && good_to_go=0
+		# Test USE_THEORADEC
+		[ $8 -eq 0 ] && [ $((echo ${!engine_deps_var} | grep -q theoradec); echo $?) -eq 0 ]  && good_to_go=0
 		[ $4 -eq 1 ] && [ $(echo ${!not_wip_engine_var} = no) ] && good_to_go=0
 		[ $6 -eq 1 ] && [ $((cat ${BUILD_PATH}/lite_engines.list | grep -wq ${a}); echo $?) -eq 1 ] && good_to_go=0
 		[ $good_to_go -eq 1 ] &&  _parent_engines_list+="ADDLIB libtemp/lib${a}.a"$'\n'

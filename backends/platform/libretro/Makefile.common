@@ -129,7 +129,7 @@ endif
 # - generates script.mri engines part
 ifeq (,$(filter clean datafiles coreinfo,$(MAKECMDGOALS)))
 $(info Configuring ScummVM engines...)
-ifneq ($(shell cd $(SCRIPTS_PATH); ./configure_engines.sh $(ROOT_PATH) $(SCUMMVM_PATH) $(NO_HIGH_DEF) $(NO_WIP) $(STATIC_LINKING) $(LITE)),0)
+ifneq ($(shell cd $(SCRIPTS_PATH); ./configure_engines.sh $(ROOT_PATH) $(SCUMMVM_PATH) $(NO_HIGH_DEF) $(NO_WIP) $(STATIC_LINKING) $(LITE) $(USE_VORBIS) $(USE_THEORADEC)),0)
    $(error Configuring ScummVM engines failed)
 else
    $(info - ScummVM engines configured)
