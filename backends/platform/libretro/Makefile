@@ -498,8 +498,6 @@ endif
 
 # Define build flags
 DEPDIR        = .deps
-HAVE_GCC3     = true
-USE_RGB_COLOR = true
 
 CXXFLAGS += -Wno-reorder
 

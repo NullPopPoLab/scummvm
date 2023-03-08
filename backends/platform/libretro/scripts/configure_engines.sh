@@ -26,13 +26,10 @@
 # $7 [REQ] USE_VORBIS [0,1]
 # #8 [REQ] USE_THEORADEC [0,1]
 
-# TODO: Only dependencies set to 0 for certain platforms in Makefile are currently tested.
-#       Script to be improved to test all dependencies.
-
 set -e
 
 # Exit if in parameters are not provided
-if [ -z $1 ] || [ -z $2 ] || [ -z $3 ] || [ -z $4 ] || [ -z $5 ] || [ -z $6 ] ; then
+if [ -z $1 ] || [ -z $2 ] || [ -z $3 ] || [ -z $4 ] || [ -z $5 ] || [ -z $6 ] || [ -z $7 ] || [ -z $8 ] ; then
 	exit 1
 fi
 

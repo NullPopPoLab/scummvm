@@ -11,32 +11,33 @@ $(foreach MODULE,$(MODULES),$(MODULE_OBJS-$(MODULE)) :=)
 MODULES     :=
 
 # Defaults
-USE_ZLIB         ?= 1
+USE_ZLIB          = 1
 USE_TREMOR       ?= 0
 USE_VORBIS       ?= 1
-USE_FLAC         ?= 1
-USE_MAD          ?= 1
-USE_FAAD         ?= 1
-USE_PNG          ?= 1
-USE_JPEG         ?= 1
+USE_FLAC          = 1
+USE_MAD           = 1
+USE_FAAD          = 1
+USE_PNG           = 1
+USE_JPEG          = 1
 USE_THEORADEC    ?= 1
-USE_FREETYPE2    ?= 1
+USE_FREETYPE2     = 1
 USE_MT32EMU      ?= 1
 USE_FLUIDSYNTH   ?= 1
-USE_LUA          ?= 1
+USE_LUA           = 1
 USE_LIBCO        ?= 1
 LOAD_RULES_MK     = 1
-USE_TINYGL       ?= 1
-USE_BINK         ?= 1
-POSIX            ?= 1
+USE_TINYGL        = 1
+USE_BINK          = 1
+POSIX             = 1
 NO_HIGH_DEF      ?= 0
 NO_WIP           ?= 1
 USE_LIBCO        ?= 1
-USE_RGB_COLOR    ?= 1
+USE_RGB_COLOR     = 1
 ENABLE_VKEYBD     = 1
 USE_CLOUD        ?= 0
 STATIC_LINKING   ?= 0
 LITE             ?= 0
+HAVE_GCC3         = 1
 
 DEBUG_ALLOW_DIRTY_SUBMODULES ?= 0
 
@@ -124,12 +125,13 @@ endif
 # Engine modules
 # Following script
 # - generates configuration engines files (build/config.mk.engines, engines/engines.mk, engines/plugins_table.h, engines/detection_table.h) from actual source in $(SCUMMVM_PATH).
+# - only dependencies set to 0 for certain platforms in Makefile are currently tested against engines requirement (e.g. vorbis, theoradec).
 # or (if static linking is required)
 # - generates config.mk.engines.lite - static file with a reduced set of engines for minimal builds - from lite_engines.list
 # - generates script.mri engines part
 ifeq (,$(filter clean datafiles coreinfo,$(MAKECMDGOALS)))
 $(info Configuring ScummVM engines...)
-ifneq ($(shell cd $(SCRIPTS_PATH); ./configure_engines.sh $(ROOT_PATH) $(SCUMMVM_PATH) $(NO_HIGH_DEF) $(NO_WIP) $(STATIC_LINKING) $(LITE) $(USE_VORBIS) $(USE_THEORADEC)),0)
+ifneq ($(shell cd $(SCRIPTS_PATH); ./configure_engines.sh $(ROOT_PATH) $(SCUMMVM_PATH) $(NO_HIGH_DEF) $(NO_WIP) $(STATIC_LINKING) $(LITE) $(if $(USE_VORBIS),$(USE_VORBIS),0) $(if $(USE_THEORADEC),$(USE_THEORADEC),0)),0)
    $(error Configuring ScummVM engines failed)
 else
    $(info - ScummVM engines configured)
