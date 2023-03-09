@@ -23,7 +23,7 @@
 #define MM1_VIEWS_ENH_DIALOGS_H
 
 #include "mm/mm1/events.h"
-#include "mm/mm1/views/create_characters.h"
+#include "mm/mm1/views_enh/create_characters.h"
 #include "mm/mm1/views/locations/inn.h"
 #include "mm/mm1/views/protect.h"
 #include "mm/mm1/views/title.h"
@@ -35,6 +35,7 @@
 #include "mm/mm1/views_enh/main_menu.h"
 #include "mm/mm1/views_enh/map_popup.h"
 #include "mm/mm1/views_enh/quick_ref.h"
+#include "mm/mm1/views_enh/title.h"
 #include "mm/mm1/views_enh/interactions/statue.h"
 #include "mm/mm1/views_enh/locations/inn.h"
 #include "mm/mm1/views_enh/locations/market.h"
@@ -50,9 +51,9 @@ namespace ViewsEnh {
 
 struct Dialogs {
 private:
-	Views::CreateCharacters _createCharacters;
+	ViewsEnh::CreateCharacters _createCharacters;
 	Views::Protect _protect;
-	Views::Title _title;
+	ViewsEnh::Title _title;
 	ViewsEnh::Characters _characters;
 	ViewsEnh::Interactions::Statue _statue;
 	ViewsEnh::Locations::Inn _inn;

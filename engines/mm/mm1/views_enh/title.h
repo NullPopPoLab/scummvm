@@ -19,43 +19,25 @@
  *
  */
 
-#ifndef VCRUISE_AUDIO_PLAYER_H
-#define VCRUISE_AUDIO_PLAYER_H
+#ifndef MM1_VIEWS_ENH_TITLE_H
+#define MM1_VIEWS_ENH_TITLE_H
 
-#include "common/mutex.h"
+#include "mm/mm1/views/title.h"
 
-#include "audio/audiostream.h"
-#include "audio/mixer.h"
+namespace MM {
+namespace MM1 {
+namespace ViewsEnh {
 
-namespace VCruise {
-
-struct AudioMetadata;
-class CachedAudio;
-
-class AudioPlayer : public Audio::AudioStream {
+class Title : public Views::Title {
 public:
-	AudioPlayer(Audio::Mixer *mixer, const Common::SharedPtr<Audio::AudioStream> &baseStream);
-	~AudioPlayer();
+	Title() : Views::Title() {}
+	virtual ~Title() {}
 
-	int readBuffer(int16 *buffer, const int numSamples) override;
-	bool isStereo() const override;
-	int getRate() const override;
-	bool endOfData() const override;
-
-	void play(byte volume, int8 balance);
-	void stop();
-
-private:
-	Common::Mutex _mutex;
-
-	Audio::SoundHandle _handle;
-	bool _isLooping;
-	bool _isPlaying;
-	bool _exhausted;
-	Audio::Mixer *_mixer;
-	Common::SharedPtr<Audio::AudioStream> _baseStream;
+	bool msgFocus(const FocusMessage &msg) override;
 };
 
-} // End of namespace VCruise
+} // namespace ViewsEnh
+} // namespace MM1
+} // namespace MM
 
 #endif

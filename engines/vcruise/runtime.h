@@ -31,9 +31,18 @@ class OSystem;
 
 namespace Common {
 
+class MemoryReadStream;
 class RandomSource;
+class ReadStream;
+class WriteStream;
 
 } // End of namespace Commom
+
+namespace Audio {
+
+class SeekableAudioStream;
+
+} // End of namespace Audio
 
 namespace Graphics {
 
@@ -81,6 +90,8 @@ struct AnimationDef {
 	uint lastFrame;	// Inclusive
 
 	Common::Rect constraintRect;
+
+	Common::String animName;
 };
 
 struct RoomDef {
@@ -124,6 +135,40 @@ struct ScriptEnvironmentVars {
 	uint fpsOverride;
 };
 
+struct SfxSound {
+	Common::Array<byte> soundData;
+	Common::SharedPtr<Common::MemoryReadStream> memoryStream;
+	Common::SharedPtr<Audio::SeekableAudioStream> audioStream;
+	Common::SharedPtr<AudioPlayer> audioPlayer;
+};
+
+struct SfxPlaylistEntry {
+	SfxPlaylistEntry();
+
+	uint frame;
+	Common::SharedPtr<SfxSound> sample;
+	int8 balance;
+	uint8 volume;
+};
+
+struct SfxPlaylist {
+	SfxPlaylist();
+
+	Common::Array<SfxPlaylistEntry> entries;
+};
+
+struct SfxData {
+	SfxData();
+
+	void reset();
+	void load(Common::SeekableReadStream &stream, Audio::Mixer *mixer);
+
+	typedef Common::HashMap<Common::String, Common::SharedPtr<SfxPlaylist> > PlaylistMap_t;
+	typedef Common::HashMap<Common::String, Common::SharedPtr<SfxSound> > SoundMap_t;
+	PlaylistMap_t playlists;
+	SoundMap_t sounds;
+};
+
 class Runtime {
 public:
 	Runtime(OSystem *system, Audio::Mixer *mixer, const Common::FSNode &rootFSNode, VCruiseGameID gameID);
@@ -141,6 +186,14 @@ public:
 	void onLButtonUp(int16 x, int16 y);
 	void onMouseMove(int16 x, int16 y);
 	void onKeyDown(Common::KeyCode keyCode);
+
+	bool canSave() const;
+	bool canLoad() const;
+
+	void saveGame(Common::WriteStream *stream) const;
+	bool loadGame(Common::ReadStream *stream);
+
+	bool bootGame(bool newGame);
 
 private:
 	enum IndexParseType {
@@ -174,12 +227,21 @@ private:
 	};
 
 	struct Gyro {
+		static const uint kMaxPreviousStates = 3;
+
 		int32 currentState;
 		int32 requiredState;
+		int32 previousStates[kMaxPreviousStates];
+		int32 requiredPreviousStates[kMaxPreviousStates];
+		uint numPreviousStates;
+		uint numPreviousStatesRequired;
+		bool wrapAround;
+		bool requireState;
 
 		Gyro();
 
 		void reset();
+		void logState();
 	};
 
 	struct GyroState {
@@ -254,7 +316,6 @@ private:
 	typedef int32 ScriptArg_t;
 	typedef int32 StackValue_t;
 
-	bool bootGame();
 	bool runIdle();
 	bool runHorizontalPan(bool isRight);
 	bool runScript();
@@ -267,6 +328,7 @@ private:
 	void drawSectionToScreen(const RenderSection &section, const Common::Rect &rect);
 	void commitSectionToScreen(const RenderSection &section, const Common::Rect &rect);
 	void terminateScript();
+	bool checkCompletionConditions();
 
 	void startTerminatingHorizontalPan(bool isRight);
 
@@ -323,20 +385,39 @@ private:
 	void scriptOpStatic(ScriptArg_t arg);
 	void scriptOpVarLoad(ScriptArg_t arg);
 	void scriptOpVarStore(ScriptArg_t arg);
+
+	void scriptOpItemCheck(ScriptArg_t arg);
+	void scriptOpItemCRSet(ScriptArg_t arg);
+	void scriptOpItemSRSet(ScriptArg_t arg);
+	void scriptOpItemRSet(ScriptArg_t arg);
+
 	void scriptOpSetCursor(ScriptArg_t arg);
 	void scriptOpSetRoom(ScriptArg_t arg);
 	void scriptOpLMB(ScriptArg_t arg);
 	void scriptOpLMB1(ScriptArg_t arg);
 	void scriptOpSoundS1(ScriptArg_t arg);
+	void scriptOpSoundS2(ScriptArg_t arg);
+	void scriptOpSoundS3(ScriptArg_t arg);
+	void scriptOpSoundL1(ScriptArg_t arg);
 	void scriptOpSoundL2(ScriptArg_t arg);
+	void scriptOpSoundL3(ScriptArg_t arg);
+	void scriptOp3DSoundL2(ScriptArg_t arg);
+	void scriptOpRange(ScriptArg_t arg);
+	void scriptOpAddXSound(ScriptArg_t arg);
+	void scriptOpClrXSound(ScriptArg_t arg);
+	void scriptOpStopSndLA(ScriptArg_t arg);
+	void scriptOpStopSndLO(ScriptArg_t arg);
 
 	void scriptOpMusic(ScriptArg_t arg);
 	void scriptOpMusicUp(ScriptArg_t arg);
 	void scriptOpMusicDn(ScriptArg_t arg);
+	void scriptOpParm0(ScriptArg_t arg);
 	void scriptOpParm1(ScriptArg_t arg);
 	void scriptOpParm2(ScriptArg_t arg);
 	void scriptOpParm3(ScriptArg_t arg);
 	void scriptOpParmG(ScriptArg_t arg);
+	void scriptOpSParmX(ScriptArg_t arg);
+	void scriptOpSAnimX(ScriptArg_t arg);
 
 	void scriptOpVolumeDn4(ScriptArg_t arg);
 	void scriptOpVolumeUp3(ScriptArg_t arg);
@@ -344,8 +425,10 @@ private:
 	void scriptOpDrop(ScriptArg_t arg);
 	void scriptOpDup(ScriptArg_t arg);
 	void scriptOpSay3(ScriptArg_t arg);
+	void scriptOpSay3Get(ScriptArg_t arg);
 	void scriptOpSetTimer(ScriptArg_t arg);
 	void scriptOpGetTimer(ScriptArg_t arg);
+	void scriptOpDelay(ScriptArg_t arg);
 	void scriptOpLoSet(ScriptArg_t arg);
 	void scriptOpLoGet(ScriptArg_t arg);
 	void scriptOpHiSet(ScriptArg_t arg);
@@ -354,7 +437,11 @@ private:
 	void scriptOpNot(ScriptArg_t arg);
 	void scriptOpAnd(ScriptArg_t arg);
 	void scriptOpOr(ScriptArg_t arg);
+	void scriptOpAdd(ScriptArg_t arg);
+	void scriptOpSub(ScriptArg_t arg);
 	void scriptOpCmpEq(ScriptArg_t arg);
+	void scriptOpCmpLt(ScriptArg_t arg);
+	void scriptOpCmpGt(ScriptArg_t arg);
 
 	void scriptOpBitLoad(ScriptArg_t arg);
 	void scriptOpBitSet0(ScriptArg_t arg);
@@ -427,6 +514,7 @@ private:
 	uint _activeScreenNumber;
 	bool _havePendingScreenChange;
 	bool _havePendingReturnToIdleState;
+	bool _havePendingCompletionCheck;
 	GameState _gameState;
 
 	bool _escOn;
@@ -445,8 +533,10 @@ private:
 	Common::SharedPtr<Common::RandomSource> _rng;
 
 	Common::SharedPtr<AudioPlayer> _musicPlayer;
+	SfxData _sfxData;
 
 	Common::SharedPtr<Video::AVIDecoder> _animDecoder;
+	Common::SharedPtr<SfxPlaylist> _animPlaylist;
 	AnimDecoderState _animDecoderState;
 	uint _animPendingDecodeFrame;
 	uint _animDisplayingFrame;
@@ -459,6 +549,9 @@ private:
 	uint32 _animFramesDecoded;
 	uint _loadedAnimation;
 	bool _animPlayWhileIdle;
+
+	Common::Array<Common::String> _animDefNames;
+	Common::HashMap<Common::String, uint> _animDefNameToIndex;
 
 	bool _idleIsOnInteraction;
 	bool _idleHaveClickInteraction;
@@ -490,12 +583,16 @@ private:
 
 	Common::Array<OSEvent> _pendingEvents;
 
-	static const uint kAnimDefStackArgs = 7;
+	static const uint kAnimDefStackArgs = 8;
 
 	static const uint kCursorArrow = 0;
 
 	static const int kPanoramaPanningMarginX = 11;
 	static const int kPanoramaPanningMarginY = 11;
+
+	static const uint kSaveGameIdentifier = 0x53566372;
+	static const uint kSaveGameCurrentVersion = 1;
+	static const uint kSaveGameEarliestSupportedVersion = 1;
 };
 
 } // End of namespace VCruise

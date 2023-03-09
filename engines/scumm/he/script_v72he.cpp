@@ -813,7 +813,7 @@ void ScummEngine_v72he::o72_actorOps() {
 		_actorClipOverride.left = pop();
 		adjustRect(_actorClipOverride);
 		break;
-	case SO_AT: 		// (HE 98+)
+	case ScummEngine_v6::SubOpType::SO_AT:		// (HE 98+)
 		j = pop();
 		i = pop();
 		a->putActor(i, j);
@@ -2115,7 +2115,7 @@ void ScummEngine_v72he::decodeParseString(int m, int n) {
 	byte b = fetchScriptByte();
 
 	switch (b) {
-	case SO_AT:
+	case ScummEngine_v6::SubOpType::SO_AT:
 		_string[m].ypos = pop();
 		_string[m].xpos = pop();
 		_string[m].overhead = false;

@@ -131,6 +131,7 @@ MODULE_OBJS += \
 	mm1/views_enh/character_select.o \
 	mm1/views_enh/character_view.o \
 	mm1/views_enh/characters.o \
+	mm1/views_enh/create_characters.o \
 	mm1/views_enh/dialogs.o \
 	mm1/views_enh/game.o \
 	mm1/views_enh/game_commands.o \
@@ -147,6 +148,7 @@ MODULE_OBJS += \
 	mm1/views_enh/scroll_view.o \
 	mm1/views_enh/text_entry.o \
 	mm1/views_enh/text_view.o \
+	mm1/views_enh/title.o \
 	mm1/views_enh/interactions/interaction.o \
 	mm1/views_enh/interactions/statue.o \
 	mm1/views_enh/locations/inn.o \

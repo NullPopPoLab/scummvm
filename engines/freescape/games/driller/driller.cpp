@@ -30,59 +30,6 @@
 namespace Freescape {
 
 enum {
-	kDrillerCGAPalettePinkBlue = 0,
-	kDrillerCGAPaletteRedGreen = 1,
-};
-
-static const struct CGAPalettteEntry {
-	int areaId;
-	int palette;
-} rawCGAPaletteTable[] {
-	{1, kDrillerCGAPaletteRedGreen},
-	{2, kDrillerCGAPalettePinkBlue},
-	{3, kDrillerCGAPaletteRedGreen},
-	{4, kDrillerCGAPalettePinkBlue},
-	{5, kDrillerCGAPaletteRedGreen},
-	{6, kDrillerCGAPalettePinkBlue},
-	{7, kDrillerCGAPaletteRedGreen},
-	{8, kDrillerCGAPalettePinkBlue},
-	{9, kDrillerCGAPaletteRedGreen},
-	{10, kDrillerCGAPalettePinkBlue},
-	{11, kDrillerCGAPaletteRedGreen},
-	{12, kDrillerCGAPalettePinkBlue},
-
-	{14, kDrillerCGAPalettePinkBlue},
-
-	{16, kDrillerCGAPalettePinkBlue},
-
-	{19, kDrillerCGAPaletteRedGreen},
-	{20, kDrillerCGAPalettePinkBlue},
-	{21, kDrillerCGAPaletteRedGreen},
-	{22, kDrillerCGAPalettePinkBlue},
-	{23, kDrillerCGAPaletteRedGreen},
-
-	{28, kDrillerCGAPalettePinkBlue},
-
-	{32, kDrillerCGAPalettePinkBlue},
-	{127, kDrillerCGAPaletteRedGreen},
-	{0, 0}   // This marks the end
-};
-
-byte kDrillerCGAPalettePinkBlueData[4][3] = {
-	{0x00, 0x00, 0x00},
-	{0x00, 0xaa, 0xaa},
-	{0xaa, 0x00, 0xaa},
-	{0xaa, 0xaa, 0xaa},
-};
-
-byte kDrillerCGAPaletteRedGreenData[4][3] = {
-	{0x00, 0x00, 0x00},
-	{0x00, 0xaa, 0x00},
-	{0xaa, 0x00, 0x00},
-	{0xaa, 0x55, 0x00},
-};
-
-enum {
 	kDrillerNoRig = 0,
 	kDrillerRigInPlace = 1,
 	kDrillerRigOutOfPlace = 2,
@@ -107,7 +54,7 @@ DrillerEngine::DrillerEngine(OSystem *syst, const ADGameDescription *gd) : Frees
 	else if (isSpectrum())
 		_viewArea = Common::Rect(56, 20, 264, 124);
 	else if (isCPC())
-		_viewArea = Common::Rect(36, 19, 284, 120);
+		_viewArea = Common::Rect(36, 16, 284, 117);
 	else if (isC64())
 		_viewArea = Common::Rect(32, 16, 288, 119);
 
@@ -147,7 +94,7 @@ void DrillerEngine::titleScreen() {
 	if (isDOS() && isDemo()) // Demo will not show any title screen
 		return;
 
-	if (isAmiga() || isAtariST()) // These releases has their own screens
+	if (isAmiga() || isAtariST()) // TODO: implement these with their own animations
 		return;
 
 	if (_title) {
@@ -158,10 +105,7 @@ void DrillerEngine::titleScreen() {
 	}
 }
 void DrillerEngine::borderScreen() {
-	if (isDOS() && isDemo()) // Demo will not show the border
-		return;
-
-	if (isAmiga() || isAtariST()) // These releases has their own screens
+	if (isAmiga() || isAtariST()) // TODO: implement these with their own animations
 		return;
 
 	if (_border) {
@@ -346,47 +290,6 @@ void DrillerEngine::loadAssetsFullGame() {
 
 void DrillerEngine::processBorder() {
 	FreescapeEngine::processBorder();
-	if (isDOS() && _renderMode == Common::kRenderCGA) { // Replace some colors for the CGA borders
-		uint32 color1 = _border->format.ARGBToColor(0xFF, 0xAA, 0x00, 0xAA);
-		uint32 color2 = _border->format.ARGBToColor(0xFF, 0xAA, 0x55, 0x00);
-
-		uint32 colorA = _border->format.ARGBToColor(0xFF, 0x00, 0xAA, 0xAA);
-		uint32 colorB = _border->format.ARGBToColor(0xFF, 0x00, 0xAA, 0x00);
-
-		uint32 colorX = _border->format.ARGBToColor(0xFF, 0xAA, 0xAA, 0xAA);
-		uint32 colorY = _border->format.ARGBToColor(0xFF, 0xAA, 0x00, 0x00);
-
-		Graphics::Surface *borderRedGreen = new Graphics::Surface();
-		borderRedGreen->create(1, 1, _border->format);
-		borderRedGreen->copyFrom(*_border);
-
-		for (int i = 0; i < _border->w; i++) {
-			for (int j = 0; j < _border->h; j++) {
-				if (borderRedGreen->getPixel(i, j) == color1)
-					borderRedGreen->setPixel(i, j, color2);
-				else if (borderRedGreen->getPixel(i, j) == colorA)
-					borderRedGreen->setPixel(i, j, colorB);
-				else if (borderRedGreen->getPixel(i, j) == colorX)
-					borderRedGreen->setPixel(i, j, colorY);
-
-			}
-		}
-		Texture *borderTextureRedGreen = _gfx->createTexture(borderRedGreen);
-
-		const CGAPalettteEntry *entry = rawCGAPaletteTable;
-		while (entry->areaId) {
-
-			if (entry->palette == kDrillerCGAPaletteRedGreen) {
-				_borderCGAByArea[entry->areaId] = borderTextureRedGreen;
-				_paletteCGAByArea[entry->areaId] = (byte *)kDrillerCGAPaletteRedGreenData;
-			} else if (entry->palette == kDrillerCGAPalettePinkBlue) {
-				_borderCGAByArea[entry->areaId] = _borderTexture;
-				_paletteCGAByArea[entry->areaId] = (byte *)kDrillerCGAPalettePinkBlueData;
-			} else
-				error("Invalid CGA palette to use");
-			entry++;
-		}
-	}
 }
 
 void DrillerEngine::drawUI() {
@@ -513,6 +416,9 @@ void DrillerEngine::drawInfoMenu() {
 			break;
 		case Common::kRenderZX:
 			color = 6;
+			break;
+		case Common::kRenderCPC:
+			color = _gfx->_underFireBackgroundColor;
 			break;
 		default:
 			color = 14;
