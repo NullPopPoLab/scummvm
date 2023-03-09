@@ -59,20 +59,7 @@ static retro_audio_sample_batch_t audio_batch_cb = NULL;
 static retro_environment_t environ_cb = NULL;
 static retro_input_poll_t poll_cb = NULL;
 static retro_input_state_t input_cb = NULL;
-
-void retro_set_video_refresh(retro_video_refresh_t cb) {
-	video_cb = cb;
-}
-void retro_set_audio_sample(retro_audio_sample_t cb) {}
-void retro_set_audio_sample_batch(retro_audio_sample_batch_t cb) {
-	audio_batch_cb = cb;
-}
-void retro_set_input_poll(retro_input_poll_t cb) {
-	poll_cb = cb;
-}
-void retro_set_input_state(retro_input_state_t cb) {
-	input_cb = cb;
-}
+static int retro_device = RETRO_DEVICE_JOYPAD;
 
 // System analog stick range is -0x8000 to 0x8000
 #define ANALOG_RANGE 0x8000
@@ -92,6 +79,159 @@ char cmd_params_num;
 
 int adjusted_RES_W = 0;
 int adjusted_RES_H = 0;
+
+static void update_variables(void) {
+	struct retro_variable var;
+
+	var.key = "scummvm_gamepad_cursor_speed";
+	var.value = NULL;
+	gampad_cursor_speed = 1.0f;
+	if (environ_cb(RETRO_ENVIRONMENT_GET_VARIABLE, &var) && var.value) {
+		gampad_cursor_speed = (float)atof(var.value);
+	}
+
+	var.key = "scummvm_gamepad_cursor_acceleration_time";
+	var.value = NULL;
+	gamepad_acceleration_time = 0.2f;
+	if (environ_cb(RETRO_ENVIRONMENT_GET_VARIABLE, &var) && var.value) {
+		gamepad_acceleration_time = (float)atof(var.value);
+	}
+
+	var.key = "scummvm_analog_response";
+	var.value = NULL;
+	analog_response_is_quadratic = false;
+	if (environ_cb(RETRO_ENVIRONMENT_GET_VARIABLE, &var) && var.value) {
+		if (strcmp(var.value, "quadratic") == 0)
+			analog_response_is_quadratic = true;
+	}
+
+	var.key = "scummvm_analog_deadzone";
+	var.value = NULL;
+	analog_deadzone = (int)(0.15f * ANALOG_RANGE);
+	if (environ_cb(RETRO_ENVIRONMENT_GET_VARIABLE, &var) && var.value) {
+		analog_deadzone = (int)(atoi(var.value) * 0.01f * ANALOG_RANGE);
+	}
+
+	var.key = "scummvm_mouse_speed";
+	var.value = NULL;
+	mouse_speed = 1.0f;
+	if (environ_cb(RETRO_ENVIRONMENT_GET_VARIABLE, &var) && var.value) {
+		mouse_speed = (float)atof(var.value);
+	}
+
+	var.key = "scummvm_speed_hack";
+	var.value = NULL;
+	speed_hack_is_enabled = false;
+	if (environ_cb(RETRO_ENVIRONMENT_GET_VARIABLE, &var) && var.value) {
+		if (strcmp(var.value, "enabled") == 0)
+			speed_hack_is_enabled = true;
+	}
+}
+
+void parse_command_params(char *cmdline) {
+	int j = 0;
+	int cmdlen = strlen(cmdline);
+	bool quotes = false;
+
+	/* Append a new line to the end of the command to signify it's finished. */
+	cmdline[cmdlen] = '\n';
+	cmdline[++cmdlen] = '\0';
+
+	/* parse command line into array of arguments */
+	for (int i = 0; i < cmdlen; i++) {
+		switch (cmdline[i]) {
+		case '\"':
+			if (quotes) {
+				cmdline[i] = '\0';
+				strcpy(cmd_params[cmd_params_num], cmdline + j);
+				cmd_params_num++;
+				quotes = false;
+			} else
+				quotes = true;
+			j = i + 1;
+			break;
+		case ' ':
+		case '\n':
+			if (!quotes) {
+				if (i != j && !quotes) {
+					cmdline[i] = '\0';
+					strcpy(cmd_params[cmd_params_num], cmdline + j);
+					cmd_params_num++;
+				}
+				j = i + 1;
+			}
+			break;
+		}
+	}
+}
+
+#if defined(WIIU) || defined(__SWITCH__) || defined(_MSC_VER) || defined(_3DS)
+#include <stdio.h>
+#include <string.h>
+char *dirname(char *path) {
+	char *p;
+	if (path == NULL || *path == '\0')
+		return ".";
+	p = path + strlen(path) - 1;
+	while (*p == '/') {
+		if (p == path)
+			return path;
+		*p-- = '\0';
+	}
+	while (p >= path && *p != '/')
+		p--;
+	return p < path ? "." : p == path ? "/" : (*p = '\0', path);
+}
+#endif
+
+#if (defined(GEKKO) && !defined(WIIU)) || defined(__CELLOS_LV2__)
+int access(const char *path, int amode) {
+	RFILE *f;
+	int mode;
+
+	switch (amode) {
+	// we don't really care if a file exists but isn't readable
+	case F_OK:
+	case R_OK:
+		mode = RETRO_VFS_FILE_ACCESS_READ;
+		break;
+
+	case W_OK:
+		mode = RETRO_VFS_FILE_ACCESS_UPDATE_EXISTING;
+		break;
+
+	default:
+		return -1;
+	}
+
+	f = filestream_open(path, RETRO_VFS_FILE_ACCESS_READ, RETRO_VFS_FILE_ACCESS_HINT_NONE);
+
+	if (f) {
+		filestream_close(f);
+		return 0;
+	}
+
+	return -1;
+}
+#endif
+
+void retro_set_video_refresh(retro_video_refresh_t cb) {
+	video_cb = cb;
+}
+
+void retro_set_audio_sample(retro_audio_sample_t cb) {}
+
+void retro_set_audio_sample_batch(retro_audio_sample_batch_t cb) {
+	audio_batch_cb = cb;
+}
+
+void retro_set_input_poll(retro_input_poll_t cb) {
+	poll_cb = cb;
+}
+
+void retro_set_input_state(retro_input_state_t cb) {
+	input_cb = cb;
+}
 
 void retro_set_environment(retro_environment_t cb) {
 	environ_cb = cb;
@@ -133,8 +273,8 @@ void retro_get_system_av_info(struct retro_system_av_info *info) {
 void retro_init(void) {
 	const char *sysdir;
 	const char *savedir;
-
 	struct retro_log_callback log;
+
 	if (environ_cb(RETRO_ENVIRONMENT_GET_LOG_INTERFACE, &log))
 		log_cb = log.log;
 	else
@@ -220,111 +360,6 @@ void retro_init(void) {
 
 void retro_deinit(void) {}
 
-void parse_command_params(char *cmdline) {
-	int j = 0;
-	int cmdlen = strlen(cmdline);
-	bool quotes = false;
-
-	/* Append a new line to the end of the command to signify it's finished. */
-	cmdline[cmdlen] = '\n';
-	cmdline[++cmdlen] = '\0';
-
-	/* parse command line into array of arguments */
-	for (int i = 0; i < cmdlen; i++) {
-		switch (cmdline[i]) {
-		case '\"':
-			if (quotes) {
-				cmdline[i] = '\0';
-				strcpy(cmd_params[cmd_params_num], cmdline + j);
-				cmd_params_num++;
-				quotes = false;
-			} else
-				quotes = true;
-			j = i + 1;
-			break;
-		case ' ':
-		case '\n':
-			if (!quotes) {
-				if (i != j && !quotes) {
-					cmdline[i] = '\0';
-					strcpy(cmd_params[cmd_params_num], cmdline + j);
-					cmd_params_num++;
-				}
-				j = i + 1;
-			}
-			break;
-		}
-	}
-}
-
-#if defined(WIIU) || defined(__SWITCH__) || defined(_MSC_VER) || defined(_3DS)
-#include <stdio.h>
-#include <string.h>
-char *dirname(char *path) {
-	char *p;
-	if (path == NULL || *path == '\0')
-		return ".";
-	p = path + strlen(path) - 1;
-	while (*p == '/') {
-		if (p == path)
-			return path;
-		*p-- = '\0';
-	}
-	while (p >= path && *p != '/')
-		p--;
-	return p < path ? "." : p == path ? "/" : (*p = '\0', path);
-}
-#endif
-
-static void update_variables(void) {
-	struct retro_variable var;
-
-	var.key = "scummvm_gamepad_cursor_speed";
-	var.value = NULL;
-	gampad_cursor_speed = 1.0f;
-	if (environ_cb(RETRO_ENVIRONMENT_GET_VARIABLE, &var) && var.value) {
-		gampad_cursor_speed = (float)atof(var.value);
-	}
-
-	var.key = "scummvm_gamepad_cursor_acceleration_time";
-	var.value = NULL;
-	gamepad_acceleration_time = 0.2f;
-	if (environ_cb(RETRO_ENVIRONMENT_GET_VARIABLE, &var) && var.value) {
-		gamepad_acceleration_time = (float)atof(var.value);
-	}
-
-	var.key = "scummvm_analog_response";
-	var.value = NULL;
-	analog_response_is_quadratic = false;
-	if (environ_cb(RETRO_ENVIRONMENT_GET_VARIABLE, &var) && var.value) {
-		if (strcmp(var.value, "quadratic") == 0)
-			analog_response_is_quadratic = true;
-	}
-
-	var.key = "scummvm_analog_deadzone";
-	var.value = NULL;
-	analog_deadzone = (int)(0.15f * ANALOG_RANGE);
-	if (environ_cb(RETRO_ENVIRONMENT_GET_VARIABLE, &var) && var.value) {
-		analog_deadzone = (int)(atoi(var.value) * 0.01f * ANALOG_RANGE);
-	}
-
-	var.key = "scummvm_mouse_speed";
-	var.value = NULL;
-	mouse_speed = 1.0f;
-	if (environ_cb(RETRO_ENVIRONMENT_GET_VARIABLE, &var) && var.value) {
-		mouse_speed = (float)atof(var.value);
-	}
-
-	var.key = "scummvm_speed_hack";
-	var.value = NULL;
-	speed_hack_is_enabled = false;
-	if (environ_cb(RETRO_ENVIRONMENT_GET_VARIABLE, &var) && var.value) {
-		if (strcmp(var.value, "enabled") == 0)
-			speed_hack_is_enabled = true;
-	}
-}
-
-static int retro_device = RETRO_DEVICE_JOYPAD;
 void retro_set_controller_port_device(unsigned port, unsigned device) {
 	if (port != 0) {
 		if (log_cb)
@@ -526,35 +561,3 @@ void retro_cheat_set(unsigned unused, bool unused1, const char *unused2) {}
 unsigned retro_get_region(void) {
 	return RETRO_REGION_NTSC;
 }
-
-#if (defined(GEKKO) && !defined(WIIU)) || defined(__CELLOS_LV2__)
-int access(const char *path, int amode) {
-	RFILE *f;
-	int mode;
-
-	switch (amode) {
-	// we don't really care if a file exists but isn't readable
-	case F_OK:
-	case R_OK:
-		mode = RETRO_VFS_FILE_ACCESS_READ;
-		break;
-
-	case W_OK:
-		mode = RETRO_VFS_FILE_ACCESS_UPDATE_EXISTING;
-		break;
-
-	default:
-		return -1;
-	}
-
-	f = filestream_open(path, RETRO_VFS_FILE_ACCESS_READ, RETRO_VFS_FILE_ACCESS_HINT_NONE);
-
-	if (f) {
-		filestream_close(f);
-		return 0;
-	}
-
-	return -1;
-}
-#endif
-
