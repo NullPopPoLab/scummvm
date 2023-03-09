@@ -131,11 +131,91 @@ void retro_get_system_av_info(struct retro_system_av_info *info) {
 }
 
 void retro_init(void) {
+	const char *sysdir;
+	const char *savedir;
+
 	struct retro_log_callback log;
 	if (environ_cb(RETRO_ENVIRONMENT_GET_LOG_INTERFACE, &log))
 		log_cb = log.log;
 	else
 		log_cb = NULL;
+
+	update_variables();
+
+	cmd_params_num = 1;
+	strcpy(cmd_params[0], "scummvm\0");
+
+	struct retro_input_descriptor desc[] = {
+		{0, RETRO_DEVICE_JOYPAD, 0, RETRO_DEVICE_ID_JOYPAD_LEFT, "Mouse Cursor Left"},
+		{0, RETRO_DEVICE_JOYPAD, 0, RETRO_DEVICE_ID_JOYPAD_UP, "Mouse Cursor Up"},
+		{0, RETRO_DEVICE_JOYPAD, 0, RETRO_DEVICE_ID_JOYPAD_DOWN, "Mouse Cursor Down"},
+		{0, RETRO_DEVICE_JOYPAD, 0, RETRO_DEVICE_ID_JOYPAD_RIGHT, "Mouse Cursor Right"},
+		{0, RETRO_DEVICE_JOYPAD, 0, RETRO_DEVICE_ID_JOYPAD_B, "Right Mouse Button"},
+		{0, RETRO_DEVICE_JOYPAD, 0, RETRO_DEVICE_ID_JOYPAD_A, "Left Mouse Button"},
+		{0, RETRO_DEVICE_JOYPAD, 0, RETRO_DEVICE_ID_JOYPAD_X, "Esc"},
+		{0, RETRO_DEVICE_JOYPAD, 0, RETRO_DEVICE_ID_JOYPAD_Y, "."},
+		{0, RETRO_DEVICE_JOYPAD, 0, RETRO_DEVICE_ID_JOYPAD_L, "Enter"},
+		{0, RETRO_DEVICE_JOYPAD, 0, RETRO_DEVICE_ID_JOYPAD_R, "Numpad 5"},
+		{0, RETRO_DEVICE_JOYPAD, 0, RETRO_DEVICE_ID_JOYPAD_L2, "Backspace"},
+		{0, RETRO_DEVICE_JOYPAD, 0, RETRO_DEVICE_ID_JOYPAD_R2, "Cursor Fine Control"},
+		{0, RETRO_DEVICE_JOYPAD, 0, RETRO_DEVICE_ID_JOYPAD_L3, "F10"},
+		{0, RETRO_DEVICE_JOYPAD, 0, RETRO_DEVICE_ID_JOYPAD_R3, "Numpad 0"},
+		{0, RETRO_DEVICE_JOYPAD, 0, RETRO_DEVICE_ID_JOYPAD_START, "ScummVM GUI"},
+		{0, RETRO_DEVICE_JOYPAD, 0, RETRO_DEVICE_ID_JOYPAD_SELECT, "Virtual Keyboard"},
+		{0, RETRO_DEVICE_MOUSE, 0, RETRO_DEVICE_ID_MOUSE_LEFT, "Left click"},
+		{0, RETRO_DEVICE_MOUSE, 0, RETRO_DEVICE_ID_MOUSE_RIGHT, "Right click"},
+		{0, RETRO_DEVICE_ANALOG, RETRO_DEVICE_INDEX_ANALOG_LEFT, RETRO_DEVICE_ID_ANALOG_X, "Left Analog X"},
+		{0, RETRO_DEVICE_ANALOG, RETRO_DEVICE_INDEX_ANALOG_LEFT, RETRO_DEVICE_ID_ANALOG_Y, "Left Analog Y"},
+		{0, RETRO_DEVICE_ANALOG, RETRO_DEVICE_INDEX_ANALOG_RIGHT, RETRO_DEVICE_ID_ANALOG_X, "Right Analog X"},
+		{0, RETRO_DEVICE_ANALOG, RETRO_DEVICE_INDEX_ANALOG_RIGHT, RETRO_DEVICE_ID_ANALOG_Y, "Right Analog Y"},
+		{0},
+	};
+
+	environ_cb(RETRO_ENVIRONMENT_SET_INPUT_DESCRIPTORS, desc);
+
+	/* Get color mode: 32 first as VGA has 6 bits per pixel */
+#if 0
+	RDOSGFXcolorMode = RETRO_PIXEL_FORMAT_XRGB8888;
+	if (!environ_cb(RETRO_ENVIRONMENT_SET_PIXEL_FORMAT, &RDOSGFXcolorMode)) {
+		RDOSGFXcolorMode = RETRO_PIXEL_FORMAT_RGB565;
+		if (!environ_cb(RETRO_ENVIRONMENT_SET_PIXEL_FORMAT, &RDOSGFXcolorMode))
+			RDOSGFXcolorMode = RETRO_PIXEL_FORMAT_0RGB1555;
+	}
+#endif
+
+#ifdef FRONTEND_SUPPORTS_RGB565
+	enum retro_pixel_format rgb565 = RETRO_PIXEL_FORMAT_RGB565;
+	if (!environ_cb(RETRO_ENVIRONMENT_SET_PIXEL_FORMAT, &rgb565) && log_cb)
+		log_cb(RETRO_LOG_INFO, "Frontend supports RGB565 -will use that instead of XRGB1555.\n");
+#endif
+
+	retro_keyboard_callback cb = {retroKeyEvent};
+	environ_cb(RETRO_ENVIRONMENT_SET_KEYBOARD_CALLBACK, &cb);
+
+	if (environ_cb(RETRO_ENVIRONMENT_GET_SYSTEM_DIRECTORY, &sysdir))
+		retroSetSystemDir(sysdir);
+	else {
+		if (log_cb)
+			log_cb(RETRO_LOG_WARN, "No System directory specified, using current directory.\n");
+		retroSetSystemDir(".");
+	}
+
+	if (environ_cb(RETRO_ENVIRONMENT_GET_SAVE_DIRECTORY, &savedir))
+		retroSetSaveDir(savedir);
+	else {
+		if (log_cb)
+			log_cb(RETRO_LOG_WARN, "No Save directory specified, using current directory.\n");
+		retroSetSaveDir(".");
+	}
+
+	g_system = retroBuildOS(speed_hack_is_enabled);
+
+	if (!g_system) {
+		if (log_cb)
+			log_cb(RETRO_LOG_ERROR, "[scummvm] Failed to initialize platform driver.\n");
+		return false;
+	}
+
 }
 
 void retro_deinit(void) {}
@@ -265,85 +345,6 @@ void retro_set_controller_port_device(unsigned port, unsigned device) {
 }
 
 bool retro_load_game(const struct retro_game_info *game) {
-	const char *sysdir;
-	const char *savedir;
-
-	update_variables();
-
-	cmd_params_num = 1;
-	strcpy(cmd_params[0], "scummvm\0");
-
-	struct retro_input_descriptor desc[] = {
-		{0, RETRO_DEVICE_JOYPAD, 0, RETRO_DEVICE_ID_JOYPAD_LEFT, "Mouse Cursor Left"},
-		{0, RETRO_DEVICE_JOYPAD, 0, RETRO_DEVICE_ID_JOYPAD_UP, "Mouse Cursor Up"},
-		{0, RETRO_DEVICE_JOYPAD, 0, RETRO_DEVICE_ID_JOYPAD_DOWN, "Mouse Cursor Down"},
-		{0, RETRO_DEVICE_JOYPAD, 0, RETRO_DEVICE_ID_JOYPAD_RIGHT, "Mouse Cursor Right"},
-		{0, RETRO_DEVICE_JOYPAD, 0, RETRO_DEVICE_ID_JOYPAD_B, "Right Mouse Button"},
-		{0, RETRO_DEVICE_JOYPAD, 0, RETRO_DEVICE_ID_JOYPAD_A, "Left Mouse Button"},
-		{0, RETRO_DEVICE_JOYPAD, 0, RETRO_DEVICE_ID_JOYPAD_X, "Esc"},
-		{0, RETRO_DEVICE_JOYPAD, 0, RETRO_DEVICE_ID_JOYPAD_Y, "."},
-		{0, RETRO_DEVICE_JOYPAD, 0, RETRO_DEVICE_ID_JOYPAD_L, "Enter"},
-		{0, RETRO_DEVICE_JOYPAD, 0, RETRO_DEVICE_ID_JOYPAD_R, "Numpad 5"},
-		{0, RETRO_DEVICE_JOYPAD, 0, RETRO_DEVICE_ID_JOYPAD_L2, "Backspace"},
-		{0, RETRO_DEVICE_JOYPAD, 0, RETRO_DEVICE_ID_JOYPAD_R2, "Cursor Fine Control"},
-		{0, RETRO_DEVICE_JOYPAD, 0, RETRO_DEVICE_ID_JOYPAD_L3, "F10"},
-		{0, RETRO_DEVICE_JOYPAD, 0, RETRO_DEVICE_ID_JOYPAD_R3, "Numpad 0"},
-		{0, RETRO_DEVICE_JOYPAD, 0, RETRO_DEVICE_ID_JOYPAD_START, "ScummVM GUI"},
-		{0, RETRO_DEVICE_JOYPAD, 0, RETRO_DEVICE_ID_JOYPAD_SELECT, "Virtual Keyboard"},
-		{0, RETRO_DEVICE_MOUSE, 0, RETRO_DEVICE_ID_MOUSE_LEFT, "Left click"},
-		{0, RETRO_DEVICE_MOUSE, 0, RETRO_DEVICE_ID_MOUSE_RIGHT, "Right click"},
-		{0, RETRO_DEVICE_ANALOG, RETRO_DEVICE_INDEX_ANALOG_LEFT, RETRO_DEVICE_ID_ANALOG_X, "Left Analog X"},
-		{0, RETRO_DEVICE_ANALOG, RETRO_DEVICE_INDEX_ANALOG_LEFT, RETRO_DEVICE_ID_ANALOG_Y, "Left Analog Y"},
-		{0, RETRO_DEVICE_ANALOG, RETRO_DEVICE_INDEX_ANALOG_RIGHT, RETRO_DEVICE_ID_ANALOG_X, "Right Analog X"},
-		{0, RETRO_DEVICE_ANALOG, RETRO_DEVICE_INDEX_ANALOG_RIGHT, RETRO_DEVICE_ID_ANALOG_Y, "Right Analog Y"},
-		{0},
-	};
-
-	environ_cb(RETRO_ENVIRONMENT_SET_INPUT_DESCRIPTORS, desc);
-
-	/* Get color mode: 32 first as VGA has 6 bits per pixel */
-#if 0
-	RDOSGFXcolorMode = RETRO_PIXEL_FORMAT_XRGB8888;
-	if (!environ_cb(RETRO_ENVIRONMENT_SET_PIXEL_FORMAT, &RDOSGFXcolorMode)) {
-		RDOSGFXcolorMode = RETRO_PIXEL_FORMAT_RGB565;
-		if (!environ_cb(RETRO_ENVIRONMENT_SET_PIXEL_FORMAT, &RDOSGFXcolorMode))
-			RDOSGFXcolorMode = RETRO_PIXEL_FORMAT_0RGB1555;
-	}
-#endif
-
-#ifdef FRONTEND_SUPPORTS_RGB565
-	enum retro_pixel_format rgb565 = RETRO_PIXEL_FORMAT_RGB565;
-	if (!environ_cb(RETRO_ENVIRONMENT_SET_PIXEL_FORMAT, &rgb565) && log_cb)
-		log_cb(RETRO_LOG_INFO, "Frontend supports RGB565 -will use that instead of XRGB1555.\n");
-#endif
-
-	retro_keyboard_callback cb = {retroKeyEvent};
-	environ_cb(RETRO_ENVIRONMENT_SET_KEYBOARD_CALLBACK, &cb);
-
-	if (environ_cb(RETRO_ENVIRONMENT_GET_SYSTEM_DIRECTORY, &sysdir))
-		retroSetSystemDir(sysdir);
-	else {
-		if (log_cb)
-			log_cb(RETRO_LOG_WARN, "No System directory specified, using current directory.\n");
-		retroSetSystemDir(".");
-	}
-
-	if (environ_cb(RETRO_ENVIRONMENT_GET_SAVE_DIRECTORY, &savedir))
-		retroSetSaveDir(savedir);
-	else {
-		if (log_cb)
-			log_cb(RETRO_LOG_WARN, "No Save directory specified, using current directory.\n");
-		retroSetSaveDir(".");
-	}
-
-	g_system = retroBuildOS(speed_hack_is_enabled);
-
-	if (!g_system) {
-		if (log_cb)
-			log_cb(RETRO_LOG_ERROR, "[scummvm] Failed to initialize platform driver.\n");
-		return false;
-	}
-
 	if (game) {
 		// Retrieve the game path.
 		Common::FSNode detect_target = Common::FSNode(game->path);
