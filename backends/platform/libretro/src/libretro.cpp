@@ -349,13 +349,6 @@ void retro_init(void) {
 	}
 
 	g_system = retroBuildOS(speed_hack_is_enabled);
-
-	if (!g_system) {
-		if (log_cb)
-			log_cb(RETRO_LOG_ERROR, "[scummvm] Failed to initialize platform driver.\n");
-		return false;
-	}
-
 }
 
 void retro_deinit(void) {}
@@ -380,6 +373,12 @@ void retro_set_controller_port_device(unsigned port, unsigned device) {
 }
 
 bool retro_load_game(const struct retro_game_info *game) {
+	if (!g_system) {
+		if (log_cb)
+			log_cb(RETRO_LOG_ERROR, "[scummvm] Failed to initialize platform driver.\n");
+		return false;
+	}
+
 	if (game) {
 		// Retrieve the game path.
 		Common::FSNode detect_target = Common::FSNode(game->path);
