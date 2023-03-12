@@ -23,7 +23,7 @@
 #define BACKENDS_LIBRETRO_OS_H
 
 #define SAMPLE_RATE     48000
-#DEFINE REFRESH_RATE    60
+#define REFRESH_RATE    60
 
 // Preliminary scan results
 #define TEST_GAME_OK_TARGET_FOUND        0

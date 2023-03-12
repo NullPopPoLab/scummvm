@@ -537,7 +537,7 @@ void retro_run(void) {
 
 
 		/* Upload video: TODO: Check the CANDUPE env value */
-		if ((audio_video_enable & 1) && !skip_frame) {
+		if (audio_video_enable & 1) {
 			const Graphics::Surface &screen = getScreen();
 			video_cb(screen.getPixels(), screen.w, screen.h, screen.pitch);
 		} else {
