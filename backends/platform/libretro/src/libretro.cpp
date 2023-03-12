@@ -96,15 +96,7 @@ static int16_t *sound_buffer = NULL;       // pointer to output buffer
 
 static void audio_buffer_init(uint16 sample_rate, uint16 frame_rate) {
 	fps = 100.0 * frame_rate;
-
-	// By design, libretro dislike having sound_rate > fps * 10
-	if (sample_rate > fps * 10)
-		sound_rate = fps * 10;
-	else
-		sound_rate = sample_rate;
-
-	sound_len = (sound_rate * 100 + (fps >> 1)) / fps;
-
+	sound_len = (sample_rate * 100 + (fps >> 1)) / fps;
 	sound_size = sound_len << 2 * sizeof(int16_t);
 	if (sound_buffer)
 		sound_buffer = (int16_t *)realloc(sound_buffer, sound_size);
@@ -114,23 +106,6 @@ static void audio_buffer_init(uint16 sample_rate, uint16 frame_rate) {
 		memset(sound_buffer, 0, sound_size);
 	else
 		log_cb(RETRO_LOG_ERROR, "audio_buffer_init error.\n");
-}
-
-static void update_audio_latency(){
-	if (frameskip_type > 1) {
-		float frame_time_msec = 100000.0f / fps;
-		audio_latency = (uint32)((6.0f * frame_time_msec) + 0.5f);
-		audio_latency = (audio_latency + 0x1F) & ~0x1F;
-
-		struct retro_audio_buffer_status_callback buf_status_cb;
-		buf_status_cb.callback = retro_audio_buff_status_cb;
-		environ_cb(RETRO_ENVIRONMENT_SET_AUDIO_BUFFER_STATUS_CALLBACK, &buf_status_cb);
-	} else {
-		audio_latency = 0;
-		environ_cb(RETRO_ENVIRONMENT_SET_AUDIO_BUFFER_STATUS_CALLBACK, NULL);
-	}
-	environ_cb(RETRO_ENVIRONMENT_SET_MINIMUM_AUDIO_LATENCY, &audio_latency);
-	log_cb(RETRO_LOG_WARN, "Audio latency set to %d\n",audio_latency);
 }
 
 static void update_variables(void) {
@@ -267,12 +242,6 @@ int access(const char *path, int amode) {
 	return -1;
 }
 #endif
-
-static void retro_audio_buff_status_cb(bool active, unsigned occupancy, bool underrun_likely) {
-	retro_audio_buff_active = active;
-	retro_audio_buff_occupancy = occupancy;
-	retro_audio_buff_underrun = underrun_likely;
-}
 
 void retro_set_video_refresh(retro_video_refresh_t cb) {
 	video_cb = cb;
@@ -411,7 +380,6 @@ void retro_init(void) {
 	audio_buffer_status_support = environ_cb(RETRO_ENVIRONMENT_SET_AUDIO_BUFFER_STATUS_CALLBACK, NULL);
 
 	audio_buffer_init(SAMPLE_RATE, REFRESH_RATE);
-	update_audio_latency();
 
 	g_system = retroBuildOS(speed_hack_is_enabled);
 }
@@ -558,7 +526,7 @@ void retro_run(void) {
 
 	// Setting RA's video or audio driver to null will disable video/audio bits,
 	int audio_video_enable = 0;
-	environ_cb(RETRO_ENVIRONMENT_GET_AUDIO_VIDEO_ENABLE, &audio_video_enable)
+	environ_cb(RETRO_ENVIRONMENT_GET_AUDIO_VIDEO_ENABLE, &audio_video_enable);
 
 	retro_switch_to_emu_thread();
 	/* Mouse */
