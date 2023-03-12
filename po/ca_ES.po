@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: ScummVM 1.6.0git\n"
 "Report-Msgid-Bugs-To: scummvm-devel@lists.scummvm.org\n"
-"POT-Creation-Date: 2023-03-09 07:10+0000\n"
-"PO-Revision-Date: 2023-02-18 00:34+0000\n"
+"POT-Creation-Date: 2023-03-12 02:57+0000\n"
+"PO-Revision-Date: 2023-03-09 17:20+0000\n"
 "Last-Translator: Xaviu <xaviu@xaviu.com>\n"
 "Language-Team: Catalan <https://translations.scummvm.org/projects/scummvm/"
 "scummvm/ca/>\n"
@@ -760,7 +760,7 @@ msgstr "Primera lletra"
 #: gui/launcher.cpp:101
 msgctxt "group"
 msgid "Initial"
-msgstr ""
+msgstr "Inicial"
 
 #. I18N: Group name for the game list, grouped by game engine
 #: gui/launcher.cpp:103
@@ -1669,11 +1669,11 @@ msgstr "Auto-desat:"
 
 #: gui/options.cpp:2610
 msgid "Random seed:"
-msgstr ""
+msgstr "Llavor aleatòria:"
 
 #: gui/options.cpp:2610
 msgid "Seed for initializing all random number generators"
-msgstr ""
+msgstr "Llavor per a inicialitzar tots els generadors de nombres aleatoris"
 
 #: gui/options.cpp:2620
 msgid "Enable Discord integration"
@@ -2019,11 +2019,11 @@ msgstr "Selecciona el directori /arrel/ per al gestor d'arxius"
 
 #: gui/options.cpp:3182
 msgid "icon packs"
-msgstr ""
+msgstr "paquets d'icones"
 
 #: gui/options.cpp:3193
 msgid "shader packs"
-msgstr ""
+msgstr "paquets de shaders"
 
 #: gui/options.cpp:3315
 msgid ""
@@ -2246,15 +2246,15 @@ msgstr "Entreu la descripció per l'espai %d:"
 
 #: gui/shaderbrowser-dialog.cpp:52
 msgid "Choose shader from the list below (or pick a file instead)"
-msgstr ""
+msgstr "Trieu un shader de la llista de sota (o trieu un fitxer)"
 
 #: gui/shaderbrowser-dialog.cpp:71
 msgid "Pick file instead..."
-msgstr ""
+msgstr "Trieu el fitxer..."
 
 #: gui/shaderbrowser-dialog.cpp:71
 msgid "Pick shader from file system"
-msgstr ""
+msgstr "Tria el shader des del sistema de fitxers"
 
 #: gui/shaderbrowser-dialog.cpp:137
 msgid "Select shader"
@@ -2357,6 +2357,7 @@ msgstr "Partides desades"
 #: base/main.cpp:643
 msgid "Bad config file format. overwrite?"
 msgstr ""
+"El format del fitxer de configuració és incorrecte. Voleu sobreescriure´l?"
 
 #. I18N: <Add a new folder> must match the translation done in backends/fs/android/android-saf-fs.h
 #: base/main.cpp:692
@@ -2391,7 +2392,7 @@ msgstr "Acceptar"
 #. I18N: A button caption to dismiss a message and read it later
 #: base/main.cpp:713 base/main.cpp:734
 msgid "Read Later"
-msgstr ""
+msgstr "Llegeix més tard"
 
 #. I18N: <Add a new folder> must match the translation done in backends/fs/android/android-saf-fs.h
 #: base/main.cpp:720
@@ -2781,12 +2782,11 @@ msgstr ""
 "Consulteu la documentació (àudio CD) per a més detalls."
 
 #: engines/engine.cpp:589
-#, fuzzy
 msgid "Skip autosave"
-msgstr "El desament automàtic és buit"
+msgstr "Omet el desament automàtic"
 
 #: engines/engine.cpp:591
-#, fuzzy, c-format
+#, c-format
 msgid ""
 "WARNING: The autosave slot contains a saved game named %S, and an autosave "
 "is pending.\n"
@@ -2794,10 +2794,12 @@ msgid ""
 "needed.\n"
 "Alternatively, you can skip the autosave (will prompt again in 5 minutes)."
 msgstr ""
-"ADVERTÈNCIA: La ranura de desament automàtic té una partida anomenada %S. "
-"Podeu moure el partida existent a una ranura nova, sobreescriure-la, o "
-"cancel·lar el desament automàtic (no es tornarà a preguntar fins que es "
-"reiniciï)"
+"ADVERTÈNCIA: La ranura de desament automàtic té una partida anomenada %S., i "
+"hi ha un desament automàtic pendent.\n"
+"Moveu aquesta partida desada a una ranura nova, o suprimiu-la si ja no és "
+"necessària.\n"
+"Alternativament, podeu ometre el desament automàtic (es tornarà a preguntar "
+"en 5 minuts)."
 
 #: engines/engine.cpp:601
 msgid "ERROR: Could not copy the savegame to a new slot"
@@ -2948,14 +2950,12 @@ msgid "Confirm"
 msgstr "Confirma"
 
 #: engines/metaengine.cpp:390
-#, fuzzy
 msgid "Autosave on"
-msgstr "Desament automàtic"
+msgstr "Desament automàtic activat"
 
 #: engines/metaengine.cpp:390
-#, fuzzy
 msgid "Autosave off"
-msgstr "Desament automàtic"
+msgstr "Desament automàtic desactivat"
 
 #: graphics/renderer.cpp:33 backends/graphics/opengl/opengl-graphics.cpp:177
 msgid "OpenGL"
@@ -3245,7 +3245,7 @@ msgstr "Trieu una carpeta nova"
 #: backends/fs/android/android-saf-fs.h:177
 #: backends/fs/android/android-saf-fs.h:178
 msgid "Add a new folder"
-msgstr ""
+msgstr "Afegeix una carpeta nova"
 
 #: backends/graphics/opengl/opengl-graphics.cpp:256
 #: backends/graphics/surfacesdl/surfacesdl-graphics.cpp:72
@@ -3940,7 +3940,7 @@ msgstr "En jocs 3D"
 #. I18N: This button opens a list of all folders added for Android Storage Attached Framework
 #: backends/platform/android/options.cpp:153
 msgid "Remove folder authorizations..."
-msgstr ""
+msgstr "Elimina les autoritzacions de carpetes..."
 
 #: backends/platform/android/options.cpp:360
 msgid "Remove"
@@ -4651,7 +4651,7 @@ msgstr "Continua"
 msgid ""
 "The fan translator does not wish his translation to be incorporated into "
 "ScummVM."
-msgstr ""
+msgstr "El traductor fan no vol que la seva traducció s'incorpori a ScummVM."
 
 #: engines/bladerunner/detection_tables.h:123 engines/cge/detection.cpp:54
 #: engines/cge/detection.cpp:60 engines/cge/detection.cpp:66
@@ -4690,6 +4690,8 @@ msgid ""
 "Enhanced Edition not supported. Please, use the original files which are "
 "part of the release."
 msgstr ""
+"L'Enhanced Edition no està suportada. Utilitzeu els fitxers que formen part "
+"del joc original."
 
 #: engines/bladerunner/metaengine.cpp:45
 msgid "Sitcom mode"
@@ -4697,7 +4699,7 @@ msgstr "Mode Sitcom"
 
 #: engines/bladerunner/metaengine.cpp:46
 msgid "Game will add laughter after actor's line or narration"
-msgstr ""
+msgstr "El joc afegirà riures després de la línia o la narració de l'actor"
 
 #: engines/bladerunner/metaengine.cpp:56
 msgid "Shorty mode"
@@ -4705,37 +4707,43 @@ msgstr "Mode curt"
 
 #: engines/bladerunner/metaengine.cpp:57
 msgid "Game will shrink the actors and make their voices high pitched"
-msgstr ""
+msgstr "El joc reduirà els actors i farà que les seves veus siguin més agudes"
 
 #: engines/bladerunner/metaengine.cpp:67
 msgid "Frame limiter high performance mode"
-msgstr ""
+msgstr "Mode de limitador de fotogrames d'alt rendiment"
 
 #: engines/bladerunner/metaengine.cpp:68
 msgid ""
 "This mode may result in high CPU usage! It avoids use of delayMillis() "
 "function."
 msgstr ""
+"Aquest mode pot resultar en un ús elevat de la CPU! Evita l'ús de la funció "
+"delayMillis()."
 
 #: engines/bladerunner/metaengine.cpp:78
 msgid "Max frames per second limit"
-msgstr ""
+msgstr "Límit màxim de fotogrames per segon"
 
 #: engines/bladerunner/metaengine.cpp:79
 msgid ""
 "This mode targets a maximum of 120 fps. When disabled, the game targets 60 "
 "fps"
 msgstr ""
+"Aquest mode fixa un màxim de 120 fps. Quan està desactivat, el joc fixa 60 "
+"fps"
 
 #: engines/bladerunner/metaengine.cpp:89
 msgid "Disable McCoy's quick stamina drain"
-msgstr ""
+msgstr "Desactiva el buidatge ràpid de la resistència de McCoy"
 
 #: engines/bladerunner/metaengine.cpp:90
 msgid ""
 "When running, McCoy won't start slowing down as soon as the player stops "
 "clicking the mouse"
 msgstr ""
+"Quan corri, el McCoy no començarà a alentir-se tan aviat com el jugador "
+"deixi de fer clic al ratolí"
 
 #: engines/bladerunner/metaengine.cpp:100
 msgid "Show subtitles during text crawl"
@@ -4744,20 +4752,24 @@ msgstr "Mostra els subtítols durant el text d'introducció"
 #: engines/bladerunner/metaengine.cpp:101
 msgid "During the intro cutscene, show subtitles during the text crawl"
 msgstr ""
+"Durant l'escena d'introducció, mostra els subtítols durant el moviment del "
+"text"
 
 #: engines/bladerunner/metaengine.cpp:111
 msgid "Fix credits for voice actors"
-msgstr ""
+msgstr "Corregeix els crèdits per als actors de doblatge"
 
 #: engines/bladerunner/metaengine.cpp:112
 msgid ""
 "Updates the end credits with corrected credits for the Spanish voice actors"
 msgstr ""
+"Actualitza els crèdits finals amb crèdits corregits per als actors de "
+"doblatge en espanyol"
 
 #. I18N: These are keymaps that work in the main gameplay and also when KIA (Knowledge Integration Assistant) is open.
 #: engines/bladerunner/metaengine.cpp:199
 msgid "common shortcuts"
-msgstr ""
+msgstr "dreceres comunes"
 
 #. I18N: These are keymaps which work only in the main gameplay and not within KIA's (Knowledge Integration Assistant) screens.
 #: engines/bladerunner/metaengine.cpp:201
@@ -4767,7 +4779,7 @@ msgstr "dreceres del joc principal"
 #. I18N: These are keymaps that work only within KIA's (Knowledge Integration Assistant) screens.
 #: engines/bladerunner/metaengine.cpp:203
 msgid "KIA only shortcuts"
-msgstr ""
+msgstr "només dreceres del KIA"
 
 #. I18N: This keymap is the main way for the user interact with the game.
 #. It is used with the game's cursor to select, walk-to, run-to, look-at, talk-to, pick up, use, shoot (combat mode), open KIA (when clicking on McCoy).
@@ -4921,7 +4933,7 @@ msgstr ""
 "demanar la propera vegada que inicieu el joc.\n"
 
 #: engines/buried/saveload.cpp:165 engines/mtropolis/saveload.cpp:158
-#: engines/vcruise/runtime.cpp:1849
+#: engines/vcruise/runtime.cpp:2291
 msgid "Saved game was created with a newer version of ScummVM. Unable to load."
 msgstr ""
 
@@ -6242,16 +6254,16 @@ msgstr "Commuta la superposició de depuració"
 msgid "Force any playing movies to end"
 msgstr ""
 
-#: engines/mtropolis/saveload.cpp:142 engines/vcruise/runtime.cpp:1835
+#: engines/mtropolis/saveload.cpp:142 engines/vcruise/runtime.cpp:2277
 msgid "Failed to read version information from save file"
 msgstr "No s'ha pogut llegir la informació de la versió de la partida desada"
 
-#: engines/mtropolis/saveload.cpp:150 engines/vcruise/runtime.cpp:1842
+#: engines/mtropolis/saveload.cpp:150 engines/vcruise/runtime.cpp:2284
 msgid ""
 "Failed to load save, the save file doesn't contain valid version information."
 msgstr ""
 
-#: engines/mtropolis/saveload.cpp:166 engines/vcruise/runtime.cpp:1856
+#: engines/mtropolis/saveload.cpp:166 engines/vcruise/runtime.cpp:2298
 msgid ""
 "Saved game was created with an earlier, incompatible version of ScummVM. "
 "Unable to load."
@@ -6870,10 +6882,8 @@ msgid ""
 msgstr ""
 
 #: engines/scumm/dialog-sessionselector.cpp:50
-#, fuzzy
-#| msgid "Saving game..."
 msgid "Querying games..."
-msgstr "Desant la partida..."
+msgstr "S'estan cercant partides..."
 
 #. I18N: Join online multiplayer game
 #: engines/scumm/dialog-sessionselector.cpp:59 engines/scumm/scumm.cpp:3469
@@ -6882,10 +6892,9 @@ msgstr ""
 
 #. I18N: Online multiplayer games were found
 #: engines/scumm/dialog-sessionselector.cpp:109
-#, fuzzy, c-format
-#| msgid "No new %S available"
+#, c-format
 msgid "Found %d available games."
-msgstr "No hi ha nou %S disponible"
+msgstr "S'han trobat %d partides disponibles."
 
 #. I18N: Previous page button
 #: engines/scumm/dialogs.cpp:279
@@ -7008,9 +7017,8 @@ msgid "Multiplayer Server:"
 msgstr ""
 
 #: engines/scumm/dialogs.cpp:1372
-#, fuzzy
 msgid "Online Server:"
-msgstr "Servidor:"
+msgstr "Servidor en línia:"
 
 #: engines/scumm/dialogs.cpp:1373
 msgid ""
@@ -7674,29 +7682,24 @@ msgid ""
 msgstr ""
 
 #: engines/scumm/metaengine.cpp:770
-#, fuzzy
 msgid "Down Left"
-msgstr "Gira a l'esquerra"
+msgstr "A baix a l'esquerra"
 
 #: engines/scumm/metaengine.cpp:783
-#, fuzzy
 msgid "Down Right"
-msgstr "Gira a la dreta"
+msgstr "A baix a la dreta"
 
 #: engines/scumm/metaengine.cpp:803
-#, fuzzy
 msgid "Up Left"
-msgstr "Esquerra"
+msgstr "A dalt a l'esquerra"
 
 #: engines/scumm/metaengine.cpp:816
-#, fuzzy
 msgid "Up Right"
-msgstr "Dreta"
+msgstr "A dalt a la dreta"
 
 #: engines/scumm/metaengine.cpp:828
-#, fuzzy
 msgid "Switch weapon"
-msgstr "Canvia els personatges:"
+msgstr "Canvia d'arma"
 
 #. I18N: Lets one skip the bike/car fight sequences in Full Throttle
 #: engines/scumm/metaengine.cpp:842
@@ -7763,9 +7766,8 @@ msgstr ""
 "ScummVM."
 
 #: engines/scumm/scumm.cpp:3469
-#, fuzzy
 msgid "Would you like to host or join a network play session?"
-msgstr "Voleu desar o carregar una partida?"
+msgstr "Voleu crear o unir-vos a una sessió de joc en xarxa?"
 
 #: engines/scumm/scumm.cpp:3469
 msgid "Host"
@@ -8428,9 +8430,8 @@ msgid "Ultima VIII Debug"
 msgstr ""
 
 #: engines/vcruise/vcruise.cpp:76
-#, fuzzy
 msgid "This game requires JPEG support, which was not compiled in."
-msgstr "No s'ha compilat el suport per a Versalles 1685"
+msgstr "Aquest joc requereix suport JPEG, que no està dins la compilació."
 
 #: engines/vcruise/vcruise.cpp:83
 msgid ""

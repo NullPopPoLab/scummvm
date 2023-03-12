@@ -27,102 +27,6 @@
 
 namespace Freescape {
 
-byte *parseEDSK(const Common::String filename, int &size) {
-	debugC(1, kFreescapeDebugParser, "Trying to parse edsk file: %s", filename.c_str());
-	Common::File file;
-	file.open(filename);
-	if (!file.isOpen())
-		error("Failed to open %s", filename.c_str());
-
-	int totalSize = file.size();
-	byte *edskBuffer = (byte *)malloc(totalSize);
-	file.read(edskBuffer, totalSize);
-	file.close();
-
-	// We don't know the final size, but we allocate enough
-	byte *memBuffer = (byte *)malloc(totalSize);
-
-	byte nsides = edskBuffer[49];
-	assert(nsides == 1);
-	int ntracks = 0;
-	int i = 256;
-	int j = 0;
-	while (i + 1 < totalSize) {
-		byte ssize = edskBuffer[i + 0x14];
-		debugC(1, kFreescapeDebugParser, "i: %x ssize: %d, number: %d", i, ssize, edskBuffer[i + 0x10]);
-		assert(ssize == 3 || edskBuffer[i + 0x0] == 'T');
-		assert(ssize == 3 || edskBuffer[i + 0x1] == 'r');
-		assert(ssize == 3 || edskBuffer[i + 0x2] == 'a');
-		//assert(ssize == 3 || ntracks == edskBuffer[i + 0x10]);
-		int start = i + 0x100;
-		debugC(1, kFreescapeDebugParser, "sector size: %d", ssize);
-		if (ssize == 2) {
-			i = i + 9 * 512 + 256;
-		} else if (ssize == 5) {
-			i = i + 8 * 512 + 256;
-		} else if (ssize == 0) {
-			i = totalSize - 1;
-		} else if (ssize == 3) {
-			break; // Not sure
-		} else {
-			error("ssize: %d", ssize);
-		}
-		int osize = i - start;
-		debugC(1, kFreescapeDebugParser, "copying track %d start: %x size: %x, dest: %x", ntracks, start, osize, j);
-		memcpy(memBuffer + j, edskBuffer + start, osize);
-		j = j + osize;
-		ntracks++;
-	}
-	size = j;
-
-	if (0) { // Useful to debug where exactly each object is located in memory once it is parsed
-		i = 0;
-		while(i < j) {
-			debugN("%05x: ", i);
-			for (int k = 0; k <= 16; k++) {
-				debugN("%02x ", memBuffer[i]);
-				i++;
-			}
-			debugN("\n");
-		}
-	}
-	free(edskBuffer);
-	return memBuffer;
-}
-
-void deobfuscateDrillerCPCVirtualWorlds(byte *memBuffer) {
-	// Deofuscation / loader code
-	for (int j = 0; j < 0x200; j++) {
-		memBuffer[0x14000 + j] = memBuffer[0x14200 + j];
-		memBuffer[0x14200 + j] = memBuffer[0x13400 + j];
-		memBuffer[0x14400 + j] = memBuffer[0x13800 + j];
-		memBuffer[0x14600 + j] = memBuffer[0x13c00 + j];
-	}
-
-	for (int j = 0; j < 0x200; j++) {
-		memBuffer[0x13c00 + j] = memBuffer[0x13a00 + j];
-		memBuffer[0x13a00 + j] = memBuffer[0x13600 + j];
-		memBuffer[0x13800 + j] = memBuffer[0x13200 + j];
-		memBuffer[0x13600 + j] = memBuffer[0x12e00 + j];
-		memBuffer[0x12e00 + j] = memBuffer[0x13000 + j];
-		memBuffer[0x13000 + j] = memBuffer[0x12200 + j];
-		memBuffer[0x13200 + j] = memBuffer[0x12600 + j];
-		memBuffer[0x13400 + j] = memBuffer[0x12a00 + j];
-	}
-
-	for (int i = 6; i >= 0; i--) {
-		//debug("copying 0x200 bytes to %x from %x", 0x12000 + 0x200*i, 0x11400 + 0x400*i);
-		for (int j = 0; j < 0x200; j++) {
-			memBuffer[0x12000 + 0x200*i + j] = memBuffer[0x11400 + 0x400*i + j];
-		}
-	}
-
-	for (int j = 0; j < 0x200; j++) {
-		memBuffer[0x11c00 + j] = memBuffer[0x11e00 + j];
-		memBuffer[0x11e00 + j] = memBuffer[0x11000 + j];
-	}
-}
-
 byte kCPCPaletteTitleData[4][3] = {
 	{0x00, 0x00, 0x00},
 	{0x00, 0x80, 0xff},
@@ -137,6 +41,19 @@ byte kCPCPaletteBorderData[4][3] = {
 	{0x00, 0x80, 0x00},
 };
 
+byte getCPCPixel(byte cpc_byte, int index) {
+	if (index == 0)
+		return ((cpc_byte & 0x08) >> 2) | ((cpc_byte & 0x80) >> 7);
+	else if (index == 1)
+		return ((cpc_byte & 0x04) >> 1) | ((cpc_byte & 0x40) >> 6);
+	else if (index == 2)
+		return (cpc_byte & 0x02)        | ((cpc_byte & 0x20) >> 5);
+	else if (index == 3)
+		return ((cpc_byte & 0x01) << 1) | ((cpc_byte & 0x10) >> 4);
+	else
+		error("Invalid index %d requested", index);
+}
+
 Graphics::ManagedSurface *readCPCImage(Common::SeekableReadStream *file) {
 	Graphics::ManagedSurface *surface = new Graphics::ManagedSurface();
 	surface->create(320, 200, Graphics::PixelFormat::createFormatCLUT8());
@@ -150,25 +67,25 @@ Graphics::ManagedSurface *readCPCImage(Common::SeekableReadStream *file) {
 				byte cpc_byte = file->readByte(); // Get CPC byte
 
 				// Process first pixel
-				int pixel_0 = ((cpc_byte & 0x08) >> 2) | ((cpc_byte & 0x80) >> 7); // %Aa
+				int pixel_0 = getCPCPixel(cpc_byte, 0); // %Aa
 				y = line * 8 + block ; // Coord Y for the pixel
 				x = 4 * offset + 0; // Coord X for the pixel
 				surface->setPixel(x, y, pixel_0);
 
 				// Process second pixel
-				int pixel_1 = ((cpc_byte & 0x04) >> 1) | ((cpc_byte & 0x40) >> 6); // %Bb
+				int pixel_1 = getCPCPixel(cpc_byte, 1); // %Bb
 				y = line * 8 + block ; // Coord Y for the pixel
 				x = 4 * offset + 1; // Coord X for the pixel
 				surface->setPixel(x, y, pixel_1);
 
 				// Process third pixel
-				int pixel_2 = (cpc_byte & 0x02)        | ((cpc_byte & 0x20) >> 5); // %Cc
+				int pixel_2 = getCPCPixel(cpc_byte, 2); // %Cc
 				y = line * 8 + block ; // Coord Y for the pixel
 				x = 4 * offset + 2; // Coord X for the pixel
 				surface->setPixel(x, y, pixel_2);
 
 				// Process fourth pixel
-				int pixel_3 = ((cpc_byte & 0x01) << 1) | ((cpc_byte & 0x10) >> 4); // %Dd
+				int pixel_3 = getCPCPixel(cpc_byte, 3); // %Dd
 				y = line * 8 + block ; // Coord Y for the pixel
 				x = 4 * offset + 3; // Coord X for the pixel
 				surface->setPixel(x, y, pixel_3);
