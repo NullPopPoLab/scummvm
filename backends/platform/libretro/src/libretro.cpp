@@ -136,7 +136,7 @@ printf("\n[LATENCY] start\n");
 		environ_cb(RETRO_ENVIRONMENT_SET_AUDIO_BUFFER_STATUS_CALLBACK, NULL);
 	}
 	environ_cb(RETRO_ENVIRONMENT_SET_MINIMUM_AUDIO_LATENCY, &audio_latency);
-	log_cb(RETRO_LOG_WARN, "Audio latency set to %d\n",audio_latency);
+//	log_cb(RETRO_LOG_WARN, "Audio latency set to %d\n",audio_latency);
 printf( "\n[LATENCY] end\n");
 
 }
