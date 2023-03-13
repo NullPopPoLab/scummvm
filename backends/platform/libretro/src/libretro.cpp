@@ -376,12 +376,12 @@ printf("\n[INIT] start\n");
 	else
 		log_cb = NULL;
 
-	update_variables();
+// Check RETRO_ENVIRONMENT_SET_AUDIO_BUFFER_STATUS_CALLBACK support
+	audio_buffer_status_support = environ_cb(RETRO_ENVIRONMENT_SET_AUDIO_BUFFER_STATUS_CALLBACK, NULL);
 
-	//simulate setting (restart needed)
-	frameskip_threshold = 33;
-	frameskip_no = 1;
-	frameskip_type = 2;
+	audio_buffer_init(SAMPLE_RATE, REFRESH_RATE);
+
+	update_variables();
 
 	cmd_params_num = 1;
 	strcpy(cmd_params[0], "scummvm\0");
@@ -448,13 +448,6 @@ printf("\n[INIT] start\n");
 			log_cb(RETRO_LOG_WARN, "No Save directory specified, using current directory.\n");
 		retroSetSaveDir(".");
 	}
-
-	// Check RETRO_ENVIRONMENT_SET_AUDIO_BUFFER_STATUS_CALLBACK support
-	audio_buffer_status_support = environ_cb(RETRO_ENVIRONMENT_SET_AUDIO_BUFFER_STATUS_CALLBACK, NULL);
-
-	audio_buffer_init(SAMPLE_RATE, REFRESH_RATE);
-
-	update_audio_latency();
 
 	g_system = retroBuildOS(speed_hack_is_enabled);
 printf("\n[INIT] end\n");
