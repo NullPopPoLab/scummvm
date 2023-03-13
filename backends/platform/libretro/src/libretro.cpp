@@ -121,7 +121,7 @@ static void retro_audio_buff_status_cb(bool active, unsigned occupancy, bool und
 }
 
 static void update_audio_latency(){
-log_cb(RETRO_LOG_INFO, "\n[LATENCY] start\n");
+printf("\n[LATENCY] start\n");
 
 	if (frameskip_type > 1) {
 		float frame_time_msec = 100000.0f / fps;
@@ -137,12 +137,12 @@ log_cb(RETRO_LOG_INFO, "\n[LATENCY] start\n");
 	}
 	environ_cb(RETRO_ENVIRONMENT_SET_MINIMUM_AUDIO_LATENCY, &audio_latency);
 	log_cb(RETRO_LOG_WARN, "Audio latency set to %d\n",audio_latency);
-log_cb(RETRO_LOG_INFO, "\n[LATENCY] end\n");
+printf( "\n[LATENCY] end\n");
 
 }
 
 static void update_variables(void) {
-log_cb(RETRO_LOG_INFO, "\n[VARS] start\n");
+printf("\n[VARS] start\n");
 
 	struct retro_variable var;
 
@@ -214,11 +214,11 @@ log_cb(RETRO_LOG_INFO, "\n[VARS] start\n");
 		else if (strcmp(var.value, "manual") == 0)
 			frameskip_type = 3;
 	}
-log_cb(RETRO_LOG_INFO, "\n[GET_VAR] frameskip_type: %d, frameskip_threshold: %d, frameskip_no: %d\n",frameskip_type,frameskip_threshold,frameskip_no);
+printf("\n[GET_VAR] frameskip_type: %d, frameskip_threshold: %d, frameskip_no: %d\n",frameskip_type,frameskip_threshold,frameskip_no);
 
 	if (old_frameskip_type != frameskip_type)
 		update_audio_latency();
-log_cb(RETRO_LOG_INFO, "\n[VARS] end\n");
+printf("\n[VARS] end\n");
 
 }
 
@@ -368,7 +368,7 @@ void retro_get_system_av_info(struct retro_system_av_info *info) {
 void retro_init(void) {
 	const char *sysdir;
 	const char *savedir;
-log_cb(RETRO_LOG_INFO, "\n[INIT] start\n");
+printf("\n[INIT] start\n");
 
 	struct retro_log_callback log;
 	if (environ_cb(RETRO_ENVIRONMENT_GET_LOG_INTERFACE, &log))
@@ -457,7 +457,7 @@ log_cb(RETRO_LOG_INFO, "\n[INIT] start\n");
 	update_audio_latency();
 
 	g_system = retroBuildOS(speed_hack_is_enabled);
-log_cb(RETRO_LOG_INFO, "\n[INIT] end\n");
+printf("\n[INIT] end\n");
 
 }
 
@@ -601,7 +601,7 @@ void retro_run(void) {
 		environ_cb(RETRO_ENVIRONMENT_SHUTDOWN, NULL);
 		return;
 	}
-log_cb(RETRO_LOG_INFO, "\n[RUN] start\n");
+printf("\n[RUN] start\n");
 	// Setting RA's video or audio driver to null will disable video/audio bits,
 	int audio_video_enable = 0;
 	environ_cb(RETRO_ENVIRONMENT_GET_AUDIO_VIDEO_ENABLE, &audio_video_enable);
@@ -612,7 +612,7 @@ log_cb(RETRO_LOG_INFO, "\n[RUN] start\n");
 	if (g_system) {
 		poll_cb();
 		retroProcessMouse(input_cb, retro_device, gampad_cursor_speed, gamepad_acceleration_time, analog_response_is_quadratic, analog_deadzone, mouse_speed);
-log_cb(RETRO_LOG_INFO, "\n[RUN] frameskip_type: %d, retro_audio_buff_active: %d retro_audio_buff_occupancy:%d, frameskip_threshold: %d, frameskip_counter: %d, audio_buffer_status_support: %d, audio_video_enable: %d, current_frame: %d.\n",frameskip_type,retro_audio_buff_active,retro_audio_buff_occupancy,frameskip_threshold,frameskip_counter,audio_buffer_status_support,audio_video_enable,current_frame);
+printf("\n[RUN] frameskip_type: %d, retro_audio_buff_active: %d retro_audio_buff_occupancy:%d, frameskip_threshold: %d, frameskip_counter: %d, audio_buffer_status_support: %d, audio_video_enable: %d, current_frame: %d.\n",frameskip_type,retro_audio_buff_active,retro_audio_buff_occupancy,frameskip_threshold,frameskip_counter,audio_buffer_status_support,audio_video_enable,current_frame);
 		if ((frameskip_type > 1) && retro_audio_buff_active) {
 			switch (frameskip_type) {
 			case 2:
@@ -665,7 +665,7 @@ log_cb(RETRO_LOG_INFO, "\n[RUN] frameskip_type: %d, retro_audio_buff_active: %d 
 	bool updated = false;
 	if (environ_cb(RETRO_ENVIRONMENT_GET_VARIABLE_UPDATE, &updated) && updated)
 		update_variables();
-log_cb(RETRO_LOG_INFO, "\n[RUN] end\n");
+printf("\n[RUN] end\n");
 }
 
 void retro_unload_game(void) {
