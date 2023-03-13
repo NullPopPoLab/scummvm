@@ -123,7 +123,7 @@ static void retro_audio_buff_status_cb(bool active, unsigned occupancy, bool und
 static void update_audio_latency(){
 printf("\n[LATENCY] start\n");
 
-	if (frameskip_type > 1) {
+/*	if (frameskip_type > 1) {
 		float frame_time_msec = 100000.0f / fps;
 		audio_latency = (uint32)((6.0f * frame_time_msec) + 0.5f);
 		audio_latency = (audio_latency + 0x1F) & ~0x1F;
@@ -136,7 +136,7 @@ printf("\n[LATENCY] start\n");
 		environ_cb(RETRO_ENVIRONMENT_SET_AUDIO_BUFFER_STATUS_CALLBACK, NULL);
 	}
 	environ_cb(RETRO_ENVIRONMENT_SET_MINIMUM_AUDIO_LATENCY, &audio_latency);
-//	log_cb(RETRO_LOG_WARN, "Audio latency set to %d\n",audio_latency);
+//	log_cb(RETRO_LOG_WARN, "Audio latency set to %d\n",audio_latency);*/
 printf( "\n[LATENCY] end\n");
 
 }
