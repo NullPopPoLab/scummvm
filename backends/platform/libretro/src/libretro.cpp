@@ -183,17 +183,17 @@ static void update_variables(void) {
 		if (strcmp(var.value, "enabled") == 0)
 			speed_hack_is_enabled = true;
 	}
-
+log_cb(RETRO_LOG_INFO, "Settings loaded.\n");
 	var.key = "scummvm_frameskip_threshold";
 	if (environ_cb(RETRO_ENVIRONMENT_GET_VARIABLE, &var) && var.value)
 		frameskip_threshold = (uint8)strtol(var.value, NULL, 10);
-
+log_cb(RETRO_LOG_INFO, "Settings loaded.\n");
 	var.key = "scummvm_frameskip_no";
 	if (environ_cb(RETRO_ENVIRONMENT_GET_VARIABLE, &var) && var.value)
 	{
 		frameskip_no = (uint8)strtol(var.value, NULL, 10) + 1;
 	}
-
+log_cb(RETRO_LOG_INFO, "Settings loaded.\n");
 	uint8 old_frameskip_type = frameskip_type;
 	var.key = "scummvm_frameskip_type";
 	var.value = NULL;
@@ -208,6 +208,7 @@ static void update_variables(void) {
 		else if (strcmp(var.value, "manual") == 0)
 			frameskip_type = 3;
 	}
+log_cb(RETRO_LOG_INFO, "Settings loaded.\n");
 	log_cb(RETRO_LOG_INFO, "Settings loaded.\n");
 	if (old_frameskip_type != frameskip_type){
 		update_audio_latency();
