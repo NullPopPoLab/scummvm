@@ -82,9 +82,9 @@ int adjusted_RES_H = 0;
 
 #define FRAMESKIP_MAX 30
 static uint32 current_frame = 0;
-static uint8 frameskip_no = 1;
-static uint8 frameskip_type = 0;
-static uint8 frameskip_threshold = 0;
+static uint8 frameskip_no;
+static uint8 frameskip_type;
+static uint8 frameskip_threshold;
 static uint32 frameskip_counter = 0;
 static uint32 audio_latency = 0;
 static bool audio_buffer_status_support = false;
@@ -208,18 +208,19 @@ static void update_variables(void) {
 		else if (strcmp(var.value, "manual") == 0)
 			frameskip_type = 3;
 	}
-
+	log_cb(RETRO_LOG_INFO, "Settings loaded.\n");
 	if (old_frameskip_type != frameskip_type){
 		update_audio_latency();
 		if (frameskip_type == 0)
 			log_cb(RETRO_LOG_INFO, "Frameskip: disabled\n");
-		else if (audio_buffer_status_support || frameskip_type == 1)
-			log_cb(RETRO_LOG_INFO, "Frameskip: fixed skip of %d frame out of %d\n", frameskip_no, frameskip_no + 1);
+		else if ( (audio_buffer_status_support || frameskip_type == 1) && frameskip_no > 1)
+			log_cb(RETRO_LOG_INFO, "Frameskip: fixed skip of %d frame out of %d\n", frameskip_no - 1, frameskip_no);
 		else if (frameskip_type == 2)
 			log_cb(RETRO_LOG_INFO, "Frameskip: auto\n");
 		else if (frameskip_type == 3)
-			log_cb(RETRO_LOG_INFO, "Frameskip: manual skip at %d%% audio buffer occupancy or lower\n", frameskip_no, frameskip_no + 1);
+			log_cb(RETRO_LOG_INFO, "Frameskip: manual skip at %d%% audio buffer occupancy or lower\n", frameskip_threshold);
 	}
+	log_cb(RETRO_LOG_INFO, "Settings loaded.\n");
 }
 
 void parse_command_params(char *cmdline) {
