@@ -123,10 +123,10 @@ static void retro_audio_buff_status_cb(bool active, unsigned occupancy, bool und
 static void update_audio_latency(){
 printf("\n[LATENCY] start\n");
 
-/*	if (frameskip_type > 1) {
-		float frame_time_msec = 100000.0f / fps;
-		audio_latency = (uint32)((6.0f * frame_time_msec) + 0.5f);
-		audio_latency = (audio_latency + 0x1F) & ~0x1F;
+	if (frameskip_type > 1) {
+		//float frame_time_msec = 100000.0f / fps;
+		//audio_latency = (uint32)((6.0f * frame_time_msec) + 0.5f);
+		//audio_latency = (audio_latency + 0x1F) & ~0x1F;
 
 		struct retro_audio_buffer_status_callback buf_status_cb;
 		buf_status_cb.callback = retro_audio_buff_status_cb;
@@ -135,8 +135,8 @@ printf("\n[LATENCY] start\n");
 		audio_latency = 0;
 		environ_cb(RETRO_ENVIRONMENT_SET_AUDIO_BUFFER_STATUS_CALLBACK, NULL);
 	}
-	environ_cb(RETRO_ENVIRONMENT_SET_MINIMUM_AUDIO_LATENCY, &audio_latency);
-//	log_cb(RETRO_LOG_WARN, "Audio latency set to %d\n",audio_latency);*/
+	//environ_cb(RETRO_ENVIRONMENT_SET_MINIMUM_AUDIO_LATENCY, &audio_latency);
+//	log_cb(RETRO_LOG_WARN, "Audio latency set to %d\n",audio_latency);
 printf( "\n[LATENCY] end\n");
 
 }
@@ -605,7 +605,7 @@ printf("\n[RUN] start\n");
 	if (g_system) {
 		poll_cb();
 		retroProcessMouse(input_cb, retro_device, gampad_cursor_speed, gamepad_acceleration_time, analog_response_is_quadratic, analog_deadzone, mouse_speed);
-printf("\n[RUN] frameskip_type: %d, retro_audio_buff_active: %d retro_audio_buff_occupancy:%d, frameskip_threshold: %d, frameskip_counter: %d, audio_buffer_status_support: %d, audio_video_enable: %d, current_frame: %d.\n",frameskip_type,retro_audio_buff_active,retro_audio_buff_occupancy,frameskip_threshold,frameskip_counter,audio_buffer_status_support,audio_video_enable,current_frame);
+printf("\n[RUN] frameskip_no: %d, frameskip_type: %d, retro_audio_buff_active: %d retro_audio_buff_occupancy:%d, frameskip_threshold: %d, frameskip_counter: %d, audio_buffer_status_support: %d, audio_video_enable: %d, current_frame: %d.\n",frameskip_no,frameskip_type,retro_audio_buff_active,retro_audio_buff_occupancy,frameskip_threshold,frameskip_counter,audio_buffer_status_support,audio_video_enable,current_frame);
 		if ((frameskip_type > 1) && retro_audio_buff_active) {
 			switch (frameskip_type) {
 			case 2:
@@ -616,15 +616,16 @@ printf("\n[RUN] frameskip_type: %d, retro_audio_buff_active: %d retro_audio_buff
 				break;
 			}
 
-			if (!skip_frame || frameskip_counter >= FRAMESKIP_MAX) {
-				if (skip_frame)
-					log_cb(RETRO_LOG_WARN, "%d frame(s) skipped\n",frameskip_counter);
-				skip_frame        = false;
-				frameskip_counter = 0;
-			} else
-				frameskip_counter++;
 		} else if (!audio_buffer_status_support || frameskip_type == 1)
 			skip_frame = !(current_frame % frameskip_no == 0);
+
+		if (!skip_frame || frameskip_counter >= FRAMESKIP_MAX) {
+			if (frameskip_counter)
+				log_cb(RETRO_LOG_WARN, "%d frame(s) skipped\n",frameskip_counter);
+			skip_frame        = false;
+			frameskip_counter = 0;
+		} else
+			frameskip_counter++;
 
 		/* Upload video: TODO: Check the CANDUPE env value */
 		if ((audio_video_enable & 1) && !skip_frame) {
