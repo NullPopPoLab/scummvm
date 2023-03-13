@@ -121,6 +121,8 @@ static void retro_audio_buff_status_cb(bool active, unsigned occupancy, bool und
 }
 
 static void update_audio_latency(){
+log_cb(RETRO_LOG_INFO, "\n[LATENCY] start\n");
+
 	if (frameskip_type > 1) {
 		float frame_time_msec = 100000.0f / fps;
 		audio_latency = (uint32)((6.0f * frame_time_msec) + 0.5f);
@@ -135,9 +137,13 @@ static void update_audio_latency(){
 	}
 	environ_cb(RETRO_ENVIRONMENT_SET_MINIMUM_AUDIO_LATENCY, &audio_latency);
 	log_cb(RETRO_LOG_WARN, "Audio latency set to %d\n",audio_latency);
+log_cb(RETRO_LOG_INFO, "\n[LATENCY] end\n");
+
 }
 
 static void update_variables(void) {
+log_cb(RETRO_LOG_INFO, "\n[VARS] start\n");
+
 	struct retro_variable var;
 
 	var.key = "scummvm_gamepad_cursor_speed";
@@ -208,9 +214,12 @@ static void update_variables(void) {
 		else if (strcmp(var.value, "manual") == 0)
 			frameskip_type = 3;
 	}
+log_cb(RETRO_LOG_INFO, "\n[GET_VAR] frameskip_type: %d, frameskip_threshold: %d, frameskip_no: %d\n",frameskip_type,frameskip_threshold,frameskip_no);
 
 	if (old_frameskip_type != frameskip_type)
 		update_audio_latency();
+log_cb(RETRO_LOG_INFO, "\n[VARS] end\n");
+
 }
 
 void parse_command_params(char *cmdline) {
@@ -359,6 +368,7 @@ void retro_get_system_av_info(struct retro_system_av_info *info) {
 void retro_init(void) {
 	const char *sysdir;
 	const char *savedir;
+log_cb(RETRO_LOG_INFO, "\n[INIT] start\n");
 
 	struct retro_log_callback log;
 	if (environ_cb(RETRO_ENVIRONMENT_GET_LOG_INTERFACE, &log))
@@ -447,6 +457,8 @@ void retro_init(void) {
 	update_audio_latency();
 
 	g_system = retroBuildOS(speed_hack_is_enabled);
+log_cb(RETRO_LOG_INFO, "\n[INIT] end\n");
+
 }
 
 void retro_deinit(void) {
@@ -581,6 +593,7 @@ bool retro_load_game_special(unsigned game_type, const struct retro_game_info *i
 }
 
 void retro_run(void) {
+
 	if (retro_emu_thread_exited())
 		retro_deinit_emu_thread();
 
@@ -588,7 +601,7 @@ void retro_run(void) {
 		environ_cb(RETRO_ENVIRONMENT_SHUTDOWN, NULL);
 		return;
 	}
-
+log_cb(RETRO_LOG_INFO, "\n[RUN] start\n");
 	// Setting RA's video or audio driver to null will disable video/audio bits,
 	int audio_video_enable = 0;
 	environ_cb(RETRO_ENVIRONMENT_GET_AUDIO_VIDEO_ENABLE, &audio_video_enable);
@@ -652,6 +665,7 @@ log_cb(RETRO_LOG_INFO, "\n[RUN] frameskip_type: %d, retro_audio_buff_active: %d 
 	bool updated = false;
 	if (environ_cb(RETRO_ENVIRONMENT_GET_VARIABLE_UPDATE, &updated) && updated)
 		update_variables();
+log_cb(RETRO_LOG_INFO, "\n[RUN] end\n");
 }
 
 void retro_unload_game(void) {
