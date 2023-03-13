@@ -183,17 +183,17 @@ static void update_variables(void) {
 		if (strcmp(var.value, "enabled") == 0)
 			speed_hack_is_enabled = true;
 	}
-log_cb(RETRO_LOG_INFO, "Settings loaded.\n");
+
 	var.key = "scummvm_frameskip_threshold";
 	if (environ_cb(RETRO_ENVIRONMENT_GET_VARIABLE, &var) && var.value)
 		frameskip_threshold = (uint8)strtol(var.value, NULL, 10);
-log_cb(RETRO_LOG_INFO, "Settings loaded.\n");
+
 	var.key = "scummvm_frameskip_no";
 	if (environ_cb(RETRO_ENVIRONMENT_GET_VARIABLE, &var) && var.value)
 	{
 		frameskip_no = (uint8)strtol(var.value, NULL, 10) + 1;
 	}
-log_cb(RETRO_LOG_INFO, "Settings loaded.\n");
+
 	uint8 old_frameskip_type = frameskip_type;
 	var.key = "scummvm_frameskip_type";
 	var.value = NULL;
@@ -208,20 +208,9 @@ log_cb(RETRO_LOG_INFO, "Settings loaded.\n");
 		else if (strcmp(var.value, "manual") == 0)
 			frameskip_type = 3;
 	}
-log_cb(RETRO_LOG_INFO, "Settings loaded.\n");
-	log_cb(RETRO_LOG_INFO, "Settings loaded.\n");
-	if (old_frameskip_type != frameskip_type){
+
+	if (old_frameskip_type != frameskip_type)
 		update_audio_latency();
-		if (frameskip_type == 0)
-			log_cb(RETRO_LOG_INFO, "Frameskip: disabled\n");
-		else if ( (audio_buffer_status_support || frameskip_type == 1) && frameskip_no > 1)
-			log_cb(RETRO_LOG_INFO, "Frameskip: fixed skip of %d frame out of %d\n", frameskip_no - 1, frameskip_no);
-		else if (frameskip_type == 2)
-			log_cb(RETRO_LOG_INFO, "Frameskip: auto\n");
-		else if (frameskip_type == 3)
-			log_cb(RETRO_LOG_INFO, "Frameskip: manual skip at %d%% audio buffer occupancy or lower\n", frameskip_threshold);
-	}
-	log_cb(RETRO_LOG_INFO, "Settings loaded.\n");
 }
 
 void parse_command_params(char *cmdline) {
@@ -610,7 +599,7 @@ void retro_run(void) {
 	if (g_system) {
 		poll_cb();
 		retroProcessMouse(input_cb, retro_device, gampad_cursor_speed, gamepad_acceleration_time, analog_response_is_quadratic, analog_deadzone, mouse_speed);
-
+log_cb(RETRO_LOG_INFO, "\n[RUN] frameskip_type: %d, retro_audio_buff_active: %d retro_audio_buff_occupancy:%d, frameskip_threshold: %d, frameskip_counter: %d, audio_buffer_status_support: %d, audio_video_enable: %d, current_frame: %d.\n",frameskip_type,retro_audio_buff_active,retro_audio_buff_occupancy,frameskip_threshold,frameskip_counter,audio_buffer_status_support,audio_video_enable,current_frame);
 		if ((frameskip_type > 1) && retro_audio_buff_active) {
 			switch (frameskip_type) {
 			case 2:
