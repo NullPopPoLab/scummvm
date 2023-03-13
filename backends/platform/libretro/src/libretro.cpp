@@ -114,6 +114,12 @@ static void audio_buffer_init(uint16 sample_rate, uint16 frame_rate) {
 		log_cb(RETRO_LOG_ERROR, "audio_buffer_init error.\n");
 }
 
+static void retro_audio_buff_status_cb(bool active, unsigned occupancy, bool underrun_likely) {
+	retro_audio_buff_active = active;
+	retro_audio_buff_occupancy = occupancy;
+	retro_audio_buff_underrun = underrun_likely;
+}
+
 static void update_audio_latency(){
 	if (frameskip_type > 1) {
 		float frame_time_msec = 100000.0f / fps;
@@ -302,12 +308,6 @@ int access(const char *path, int amode) {
 	return -1;
 }
 #endif
-
-static void retro_audio_buff_status_cb(bool active, unsigned occupancy, bool underrun_likely) {
-	retro_audio_buff_active = active;
-	retro_audio_buff_occupancy = occupancy;
-	retro_audio_buff_underrun = underrun_likely;
-}
 
 void retro_set_video_refresh(retro_video_refresh_t cb) {
 	video_cb = cb;
