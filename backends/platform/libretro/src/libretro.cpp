@@ -622,7 +622,7 @@ printf("\n[RUN] audio_status: %d, frameskip_no: %d, frameskip_type: %d, retro_au
 				log_cb(RETRO_LOG_WARN, "%d frame(s) skipped\n",frameskip_counter);
 			skip_frame        = false;
 			frameskip_counter = 0;
-		} else
+		} else if (skip_frame)
 			frameskip_counter++;
 
 		/* Upload video: TODO: Check the CANDUPE env value */
