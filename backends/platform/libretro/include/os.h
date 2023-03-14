@@ -24,6 +24,13 @@
 
 #define SAMPLE_RATE     48000
 #define REFRESH_RATE    60
+#define FRAMESKIP_MAX   30
+
+// Audio status
+#define AUDIO_STATUS_MUTE               0
+#define AUDIO_STATUS_BUFFER_SUPPORT     1
+#define AUDIO_STATUS_BUFFER_ACTIVE      2
+#define AUDIO_STATUS_BUFFER_UNDERRUN    3
 
 // Preliminary scan results
 #define TEST_GAME_OK_TARGET_FOUND        0
