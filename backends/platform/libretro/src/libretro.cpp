@@ -86,6 +86,7 @@ static uint8 frameskip_type;
 static uint8 frameskip_threshold;
 static uint32 frameskip_counter = 0;
 
+static bool can_dupe = false;
 static uint8 audio_status = 0;
 
 static unsigned retro_audio_buff_occupancy = 0;
@@ -370,6 +371,8 @@ void retro_init(void) {
 	audio_buffer_init(SAMPLE_RATE, REFRESH_RATE);
 	update_variables();
 
+	environ_cb(RETRO_ENVIRONMENT_GET_CAN_DUPE, &can_dupe);
+
 	cmd_params_num = 1;
 	strcpy(cmd_params[0], "scummvm\0");
 
@@ -590,8 +593,8 @@ void retro_run(void) {
 	if (g_system) {
 		poll_cb();
 		retroProcessMouse(input_cb, retro_device, gampad_cursor_speed, gamepad_acceleration_time, analog_response_is_quadratic, analog_deadzone, mouse_speed);
-printf("\n[RUN] audio_status: %d, frameskip_no: %d, frameskip_type: %d, retro_audio_buff_occupancy:%d, frameskip_threshold: %d, frameskip_counter: %d, audio_video_enable: %d, current_frame: %d.\n",audio_status,frameskip_no,frameskip_type,retro_audio_buff_occupancy,frameskip_threshold,frameskip_counter,audio_video_enable,current_frame);
-		if (frameskip_type) {
+
+		if (frameskip_type && can_dupe) {
 			if (audio_status & (AUDIO_STATUS_BUFFER_SUPPORT | AUDIO_STATUS_BUFFER_ACTIVE)){
 				switch (frameskip_type) {
 				case 1:
@@ -625,7 +628,6 @@ printf("\n[RUN] audio_status: %d, frameskip_no: %d, frameskip_type: %d, retro_au
 		} else if (skip_frame)
 			frameskip_counter++;
 
-		/* Upload video: TODO: Check the CANDUPE env value */
 		if ((audio_video_enable & 1) && !skip_frame) {
 			const Graphics::Surface &screen = getScreen();
 			video_cb(screen.getPixels(), screen.w, screen.h, screen.pitch);
