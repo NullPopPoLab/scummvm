@@ -109,7 +109,7 @@ static void audio_buffer_init(uint16 sample_rate, uint16 frame_rate) {
 	else
 		log_cb(RETRO_LOG_ERROR, "audio_buffer_init error.\n");
 
-	update_latency = true;
+	audio_status |= AUDIO_STATUS_UPDATE_LATENCY;
 }
 
 static void retro_audio_buff_status_cb(bool active, unsigned occupancy, bool underrun_likely) {
@@ -127,14 +127,14 @@ static void retro_audio_buff_status_cb(bool active, unsigned occupancy, bool und
 }
 
 static void set_audio_buffer_status(){
-	struct retro_audio_buffer_status_callback buf_status_cb;
 	if (frameskip_type > 1) {
+		struct retro_audio_buffer_status_callback buf_status_cb;
 		buf_status_cb.callback = retro_audio_buff_status_cb;
 	} else {
-		buf_status_cb = NULL;
+		void * buf_status_cb = NULL;
 	}
 
-	audio_status = environ_cb(RETRO_ENVIRONMENT_SET_AUDIO_BUFFER_STATUS_CALLBACK, &buf_status_cb) ? (audio_status | AUDIO_STATUS_BUFFER_SUPPORT) : (audio_status & ~AUDIO_STATUS_BUFFER_SUPPORT) ;
+	audio_status = environ_cb(RETRO_ENVIRONMENT_SET_AUDIO_BUFFER_STATUS_CALLBACK, &buf_status_cb) ? (audio_status | AUDIO_STATUS_BUFFER_SUPPORT) : (audio_status & ~AUDIO_STATUS_BUFFER_SUPPORT);
 }
 
 static void update_variables(void) {
@@ -211,7 +211,7 @@ static void update_variables(void) {
 
 	if (old_frameskip_type != frameskip_type){
 		set_audio_buffer_status();
-		update_latency = true;
+		audio_status |= AUDIO_STATUS_UPDATE_LATENCY;
 	}
 }
 
@@ -370,7 +370,6 @@ void retro_init(void) {
 
 	audio_buffer_init(SAMPLE_RATE, REFRESH_RATE);
 	update_variables();
-	update_latency = true;
 
 	cmd_params_num = 1;
 	strcpy(cmd_params[0], "scummvm\0");
@@ -655,7 +654,7 @@ printf("\n[RUN] frameskip_no: %d, frameskip_type: %d, retro_audio_buff_occupancy
 		update_variables();
 	}
 
-	if (update_latency){
+	if (audio_status & AUDIO_STATUS_UPDATE_LATENCY){
 		uint32 audio_latency;
 		if (frameskip_type > 1) {
 			float frame_time_msec = 100000.0f / fps;
@@ -667,7 +666,7 @@ printf("\n[RUN] frameskip_no: %d, frameskip_type: %d, retro_audio_buff_occupancy
 		}
 		/* This can only be called from within retro_run() */
 		environ_cb(RETRO_ENVIRONMENT_SET_MINIMUM_AUDIO_LATENCY, &audio_latency);
-		update_latency = false;
+		audio_status &= ~AUDIO_STATUS_UPDATE_LATENCY;
 	}
 }
 

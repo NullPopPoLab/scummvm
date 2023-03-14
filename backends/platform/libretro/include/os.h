@@ -31,6 +31,7 @@
 #define AUDIO_STATUS_BUFFER_SUPPORT     1
 #define AUDIO_STATUS_BUFFER_ACTIVE      2
 #define AUDIO_STATUS_BUFFER_UNDERRUN    3
+#define AUDIO_STATUS_UPDATE_LATENCY     4
 
 // Preliminary scan results
 #define TEST_GAME_OK_TARGET_FOUND        0
