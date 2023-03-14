@@ -590,12 +590,13 @@ void retro_run(void) {
 	if (g_system) {
 		poll_cb();
 		retroProcessMouse(input_cb, retro_device, gampad_cursor_speed, gamepad_acceleration_time, analog_response_is_quadratic, analog_deadzone, mouse_speed);
-printf("\n[RUN] frameskip_no: %d, frameskip_type: %d, retro_audio_buff_occupancy:%d, frameskip_threshold: %d, frameskip_counter: %d, audio_video_enable: %d, current_frame: %d.\n",frameskip_no,frameskip_type,retro_audio_buff_occupancy,frameskip_threshold,frameskip_counter,audio_video_enable,current_frame);
-		if ((frameskip_type) && (audio_status & AUDIO_STATUS_BUFFER_ACTIVE)) {
-			if (!(audio_status & AUDIO_STATUS_BUFFER_SUPPORT)){
+printf("\n[RUN] audio_status: %d, frameskip_no: %d, frameskip_type: %d, retro_audio_buff_occupancy:%d, frameskip_threshold: %d, frameskip_counter: %d, audio_video_enable: %d, current_frame: %d.\n",audio_status,frameskip_no,frameskip_type,retro_audio_buff_occupancy,frameskip_threshold,frameskip_counter,audio_video_enable,current_frame);
+		if (frameskip_type) {
+			if (audio_status & (AUDIO_STATUS_BUFFER_SUPPORT | AUDIO_STATUS_BUFFER_ACTIVE)){
 				switch (frameskip_type) {
 				case 1:
 					skip_frame = !(current_frame % frameskip_no == 0);
+					break;
 				case 2:
 					skip_frame = (audio_status & AUDIO_STATUS_BUFFER_UNDERRUN);
 					break;
@@ -605,7 +606,6 @@ printf("\n[RUN] frameskip_no: %d, frameskip_type: %d, retro_audio_buff_occupancy
 				}
 			} else
 				skip_frame = !(current_frame % frameskip_no == 0);
-
 		}
 		/* Upload audio */
 		size_t count = 0;
