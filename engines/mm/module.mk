@@ -133,6 +133,7 @@ MODULE_OBJS += \
 	mm1/views_enh/characters.o \
 	mm1/views_enh/create_characters.o \
 	mm1/views_enh/dialogs.o \
+	mm1/views_enh/exchange.o \
 	mm1/views_enh/game.o \
 	mm1/views_enh/game_commands.o \
 	mm1/views_enh/game_messages.o \
@@ -142,11 +143,13 @@ MODULE_OBJS += \
 	mm1/views_enh/map.o \
 	mm1/views_enh/map_popup.o \
 	mm1/views_enh/party_view.o \
+	mm1/views_enh/protect.o \
 	mm1/views_enh/quick_ref.o \
 	mm1/views_enh/scroll_popup.o \
 	mm1/views_enh/scroll_text.o \
 	mm1/views_enh/scroll_view.o \
 	mm1/views_enh/search.o \
+	mm1/views_enh/select_number.o \
 	mm1/views_enh/text_entry.o \
 	mm1/views_enh/text_view.o \
 	mm1/views_enh/title.o \

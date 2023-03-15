@@ -1337,6 +1337,7 @@ for ac_option in $@; do
 		arg=`echo $ac_option | cut -d '=' -f 2`
 		VPX_CFLAGS="-I$arg/include"
 		VPX_LIBS="-L$arg/lib"
+		VPX_STATIC_LIBS="-L$arg/lib"
 		;;
 	--with-faad-prefix=*)
 		arg=`echo $ac_option | cut -d '=' -f 2`
@@ -3245,9 +3246,6 @@ EOF
 	psp)
 		_optimization_level=-O2
 		_freetypepath="$PSPDEV/psp/bin"
-		if test -z "$PKG_CONFIG_LIBDIR"; then
-			PKG_CONFIG_LIBDIR="$PSPDEV/psp/lib/pkgconfig"
-		fi
 		append_var CXXFLAGS "-I$PSPSDK/include"
 		# FIXME: Why is the following in CXXFLAGS and not in DEFINES? Change or document this.
 		append_var CXXFLAGS "-D_PSP_FW_VERSION=150"
@@ -3854,6 +3852,7 @@ if test -n "$_host"; then
 			_build_aspect=no
 			_mt32emu=no
 			_port_mk="backends/platform/psp/psp.mk"
+			_pkgconfig="${PSPDEV}/bin/psp-pkg-config"
 			;;
 		tvos)
 			add_line_to_config_mk 'IPHONE = 1'
@@ -5330,6 +5329,7 @@ if test "$_vpx" = auto ; then
 
 	if test "$_pkg_config" = "yes" && $_pkgconfig --exists vpx; then
 		append_var VPX_LIBS "`$_pkgconfig --libs vpx`"
+		append_var VPX_STATIC_LIBS "`$_pkgconfig --static --libs vpx`"
 		append_var VPX_CFLAGS "`$_pkgconfig --cflags vpx`"
 	else
 		append_var VPX_LIBS "-lvpx"
@@ -5349,7 +5349,13 @@ int main(void) {
 	return 0;
 }
 EOF
-	cc_check $VPX_CFLAGS $VPX_LIBS && _vpx=yes
+	cc_check_no_clean $VPX_CFLAGS $VPX_LIBS && _vpx=yes
+	# If it fails, try with static libs, it may help
+	if test "$_vpx" != "yes"; then
+		VPX_LIBS="$VPX_STATIC_LIBS"
+		cc_check_no_clean $VPX_CFLAGS $VPX_LIBS && _vpx=yes
+	fi
+	cc_check_clean
 fi
 if test "$_vpx" = yes ; then
 	append_var LIBS "$VPX_LIBS -lvpx"

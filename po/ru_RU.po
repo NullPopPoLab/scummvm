@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: ScummVM 1.8.0svn\n"
 "Report-Msgid-Bugs-To: scummvm-devel@lists.scummvm.org\n"
-"POT-Creation-Date: 2023-03-12 02:57+0000\n"
+"POT-Creation-Date: 2023-03-13 19:17+0000\n"
 "PO-Revision-Date: 2023-03-06 22:07+0000\n"
 "Last-Translator: Eugene Sandulenko <sev@scummvm.org>\n"
 "Language-Team: Russian <https://translations.scummvm.org/projects/scummvm/"
@@ -141,7 +141,7 @@ msgstr ""
 #: engines/grim/grim.cpp:359 engines/kyra/gui/saveload_eob.cpp:597
 #: engines/kyra/gui/saveload_eob.cpp:630
 #: engines/parallaction/metaengine.cpp:145
-#: engines/sci/graphics/controls32.cpp:929 engines/scumm/scumm.cpp:3463
+#: engines/sci/graphics/controls32.cpp:929 engines/scumm/scumm.cpp:3480
 #: engines/toon/toon.cpp:1502
 msgid "Yes"
 msgstr "Да"
@@ -154,7 +154,7 @@ msgstr "Да"
 #: engines/grim/grim.cpp:359 engines/kyra/gui/saveload_eob.cpp:597
 #: engines/kyra/gui/saveload_eob.cpp:630
 #: engines/parallaction/metaengine.cpp:151
-#: engines/sci/graphics/controls32.cpp:929 engines/scumm/scumm.cpp:3463
+#: engines/sci/graphics/controls32.cpp:929 engines/scumm/scumm.cpp:3480
 #: engines/toon/toon.cpp:1502
 msgid "No"
 msgstr "Нет"
@@ -182,10 +182,10 @@ msgstr ""
 #: engines/drascula/saveload.cpp:48 engines/grim/inputdialog.cpp:83
 #: engines/groovie/script.cpp:660 engines/parallaction/saveload.cpp:270
 #: engines/saga/music.cpp:102 engines/sci/engine/kgraphics.cpp:75
-#: engines/sci/graphics/controls32.cpp:926 engines/scumm/scumm.cpp:1134
-#: engines/scumm/scumm.cpp:1160 engines/scumm/scumm.cpp:1182
-#: engines/scumm/scumm.cpp:1535 engines/scumm/scumm.cpp:2006
-#: engines/scumm/scumm.cpp:2022 engines/sky/compact.cpp:140
+#: engines/sci/graphics/controls32.cpp:926 engines/scumm/scumm.cpp:1151
+#: engines/scumm/scumm.cpp:1177 engines/scumm/scumm.cpp:1199
+#: engines/scumm/scumm.cpp:1552 engines/scumm/scumm.cpp:2023
+#: engines/scumm/scumm.cpp:2039 engines/sky/compact.cpp:140
 #: engines/sword1/animation.cpp:529 engines/sword1/animation.cpp:560
 #: engines/sword1/animation.cpp:568 engines/sword1/control.cpp:888
 #: engines/sword1/logic.cpp:1634 engines/sword2/animation.cpp:426
@@ -4443,7 +4443,7 @@ msgstr "Восстановить"
 msgid "Quick load or save game isn't supported in this location"
 msgstr "Быстрое сохранение или загрузка не поддерживаются в этой локации"
 
-#: engines/agos/saveload.cpp:161 engines/scumm/scumm.cpp:2784
+#: engines/agos/saveload.cpp:161 engines/scumm/scumm.cpp:2801
 #, c-format
 msgid ""
 "Failed to load saved game from file:\n"
@@ -4454,7 +4454,7 @@ msgstr ""
 "\n"
 "%s"
 
-#: engines/agos/saveload.cpp:196 engines/scumm/scumm.cpp:2771
+#: engines/agos/saveload.cpp:196 engines/scumm/scumm.cpp:2788
 #, c-format
 msgid ""
 "Failed to save game to file:\n"
@@ -4465,7 +4465,7 @@ msgstr ""
 "\n"
 "%s"
 
-#: engines/agos/saveload.cpp:204 engines/scumm/scumm.cpp:2800
+#: engines/agos/saveload.cpp:204 engines/scumm/scumm.cpp:2817
 #, c-format
 msgid ""
 "Successfully saved game in file:\n"
@@ -4686,8 +4686,8 @@ msgstr "Автор перевода не желает, чтобы его пер�
 #: engines/mohawk/detection_tables.h:2492
 #: engines/mohawk/detection_tables.h:3562
 #: engines/mohawk/detection_tables.h:3577 engines/myst3/detection.cpp:142
-#: engines/saga/detection_tables.h:46 engines/sci/detection_tables.h:5183
-#: engines/sci/detection_tables.h:5191 engines/stark/detection.cpp:319
+#: engines/saga/detection_tables.h:46 engines/sci/detection_tables.h:5190
+#: engines/sci/detection_tables.h:5198 engines/stark/detection.cpp:319
 #: engines/teenagent/detection.cpp:117 engines/toltecs/detection.cpp:210
 #: engines/trecision/detection.cpp:201 engines/zvision/detection_tables.h:127
 msgid "Missing game code"
@@ -4939,7 +4939,7 @@ msgstr ""
 "сообщение появится снова при следующем запуске игры.\n"
 
 #: engines/buried/saveload.cpp:165 engines/mtropolis/saveload.cpp:158
-#: engines/vcruise/runtime.cpp:2291
+#: engines/vcruise/vcruise.cpp:245
 msgid "Saved game was created with a newer version of ScummVM. Unable to load."
 msgstr ""
 "Этот файл сохранения был создан в более новой версии ScummVM. Не могу его "
@@ -6398,18 +6398,18 @@ msgstr "Вкл/выкл слой для отладки"
 msgid "Force any playing movies to end"
 msgstr "Заставляет проигрывать все ролики до конца"
 
-#: engines/mtropolis/saveload.cpp:142 engines/vcruise/runtime.cpp:2277
+#: engines/mtropolis/saveload.cpp:142
 msgid "Failed to read version information from save file"
 msgstr "Не удалось загрузить информацию о версии из сохранения"
 
-#: engines/mtropolis/saveload.cpp:150 engines/vcruise/runtime.cpp:2284
+#: engines/mtropolis/saveload.cpp:150 engines/vcruise/vcruise.cpp:240
 msgid ""
 "Failed to load save, the save file doesn't contain valid version information."
 msgstr ""
 "Не удалось загрузить игру, в файле сохранения отсутствует информация о "
 "версии."
 
-#: engines/mtropolis/saveload.cpp:166 engines/vcruise/runtime.cpp:2298
+#: engines/mtropolis/saveload.cpp:166 engines/vcruise/vcruise.cpp:250
 msgid ""
 "Saved game was created with an earlier, incompatible version of ScummVM. "
 "Unable to load."
@@ -6901,7 +6901,7 @@ msgstr "Casio MT-540"
 msgid "Casio CT-460 / CSM-1"
 msgstr "Casio CT-460 / CSM-1"
 
-#: engines/sci/detection_tables.h:4474
+#: engines/sci/detection_tables.h:4481
 msgid "Incomplete game detected. You have to copy data from all the CDs."
 msgstr ""
 "Обнаружена неполная игра. Вам необходимо скопировать данные со всех CD."
@@ -7088,7 +7088,7 @@ msgstr ""
 "В этом случае вам может понадобиться применить оригинальный патч Sierra.\n"
 "\n"
 
-#: engines/scumm/detection_internal.h:358
+#: engines/scumm/detection_internal.h:368
 msgid ""
 "This version of Monkey Island can't be played, because Limited Run Games "
 "provided corrupted DISK04.LEC and 903.LFL files.\n"
@@ -7109,7 +7109,7 @@ msgid "Querying games..."
 msgstr "Получаю список игр..."
 
 #. I18N: Join online multiplayer game
-#: engines/scumm/dialog-sessionselector.cpp:59 engines/scumm/scumm.cpp:3469
+#: engines/scumm/dialog-sessionselector.cpp:59 engines/scumm/scumm.cpp:3486
 msgid "Join"
 msgstr "Подключиться"
 
@@ -7971,7 +7971,7 @@ msgstr "Переключить оружие"
 msgid "Win the bike fight cheat"
 msgstr "Чит для выигрыша боёв на байках"
 
-#: engines/scumm/scumm.cpp:279
+#: engines/scumm/scumm.cpp:281
 msgid ""
 "You have enabled 'aspect ratio correction'. However, FM-TOWNS' natural "
 "resolution is 320x240, which doesn't allow aspect ratio correction.\n"
@@ -7984,7 +7984,7 @@ msgstr ""
 "Коррекция соотношения сторон может быть достигнута путем обрезки разрешения "
 "до 320x200 на вкладке «Движок»."
 
-#: engines/scumm/scumm.cpp:1133
+#: engines/scumm/scumm.cpp:1150
 msgid ""
 "Could not find the 'Indy' Macintosh executable. High-resolution fonts will\n"
 "be disabled."
@@ -7992,7 +7992,7 @@ msgstr ""
 "Не удалось найти исполнимый файл 'Штвн' Macintosh. Шрифты\n"
 "высокого разрешения будут выключены."
 
-#: engines/scumm/scumm.cpp:1159
+#: engines/scumm/scumm.cpp:1176
 msgid ""
 "Could not find the 'Loom' Macintosh executable. Music and high-resolution\n"
 "versions of font and cursor will be disabled."
@@ -8000,7 +8000,7 @@ msgstr ""
 "Не удалось найти исполнимый файл 'Loom' Macintosh. Музыка и шрифты\n"
 "высокого разрешения будут выключены."
 
-#: engines/scumm/scumm.cpp:1181
+#: engines/scumm/scumm.cpp:1198
 msgid ""
 "Could not find the 'Monkey Island' Macintosh executable to read the\n"
 "instruments from. Music will be disabled."
@@ -8008,7 +8008,7 @@ msgstr ""
 "Не удалось найти исполнимый файл 'Monkey Island' Macintosh, чтобы прочитать\n"
 "данные об инструментах. Музыка будет выключена."
 
-#: engines/scumm/scumm.cpp:1532
+#: engines/scumm/scumm.cpp:1549
 msgid ""
 "Audio files compressed with ScummVM Tools were detected; *.BUN/*.SOU\n"
 "compression is not supported anymore for this game, audio will be disabled.\n"
@@ -8018,7 +8018,7 @@ msgstr ""
 "*.BUN/*.SOU больше не поддерживается для этой игры, звук будет выключен.\n"
 "Пожалуйста, скопируйте заново файлы с оригинальных дисков без компрессии."
 
-#: engines/scumm/scumm.cpp:2004
+#: engines/scumm/scumm.cpp:2021
 #, c-format
 msgid ""
 "Native MIDI support requires the Roland Upgrade from LucasArts,\n"
@@ -8027,7 +8027,7 @@ msgstr ""
 "Режим \"родного\" MIDI требует обновление Roland Upgrade от\n"
 "LucasArts, но не хватает %s. Переключаюсь на AdLib."
 
-#: engines/scumm/scumm.cpp:2020
+#: engines/scumm/scumm.cpp:2037
 msgid ""
 "This particular version of Monkey Island 1 is known to miss some\n"
 "required resources for MT-32. Using AdLib instead."
@@ -8035,7 +8035,7 @@ msgstr ""
 "Эта версия Monkey Island 1 известна тем, что в ней отсутствуют\n"
 "ресурсы, необходимые для MT-32. Переключаюсь на AdLib."
 
-#: engines/scumm/scumm.cpp:3360
+#: engines/scumm/scumm.cpp:3377
 msgid ""
 "Usually, Maniac Mansion would start now. But for that to work, the game "
 "files for Maniac Mansion have to be in the 'Maniac' directory inside the "
@@ -8045,11 +8045,11 @@ msgstr ""
 "игры Maniac Mansion должны быть скопированы в директорию 'Maniac' внутри "
 "директории игры Tentacle и сама игра должна быть добавлена в ScummVM."
 
-#: engines/scumm/scumm.cpp:3469
+#: engines/scumm/scumm.cpp:3486
 msgid "Would you like to host or join a network play session?"
 msgstr "Вы хотите присоединиться или начать сетевую игру?"
 
-#: engines/scumm/scumm.cpp:3469
+#: engines/scumm/scumm.cpp:3486
 msgid "Host"
 msgstr "Начать"
 
@@ -8757,6 +8757,28 @@ msgid ""
 msgstr ""
 "Музыка в этой игре требует поддержку MP3, которая не была скомпилирована.\n"
 "Игра запустится, но без музыки."
+
+#: engines/vcruise/vcruise.cpp:230
+#, fuzzy
+#| msgid ""
+#| "Failed to load save, the save file doesn't contain valid version "
+#| "information."
+msgid "Failed to load save, the save data appears to be damaged."
+msgstr ""
+"Не удалось загрузить игру, в файле сохранения отсутствует информация о "
+"версии."
+
+#: engines/vcruise/vcruise.cpp:235
+#, fuzzy
+#| msgid "Failed to read version information from save file"
+msgid "Failed to read version information from save file."
+msgstr "Не удалось загрузить информацию о версии из сохранения"
+
+#: engines/vcruise/vcruise.cpp:255
+#, fuzzy
+#| msgid "An internal error occurred while attempting to write save game data"
+msgid "An unknown error occurred while attempting to load the saved game."
+msgstr "Возникла внутренняя ошибка при попытке записи данных игры"
 
 #: engines/wintermute/metaengine.cpp:42
 msgid "Show FPS-counter"

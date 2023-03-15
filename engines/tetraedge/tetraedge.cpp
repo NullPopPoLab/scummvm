@@ -134,6 +134,14 @@ Common::String TetraedgeEngine::getGameId() const {
 	return _gameDescription->gameId;
 }
 
+Common::Language TetraedgeEngine::getGameLanguage() const {
+	return _gameDescription->language;
+}
+
+Common::Platform TetraedgeEngine::getGamePlatform() const {
+	return _gameDescription->platform;
+}
+
 bool TetraedgeEngine::canLoadGameStateCurrently() {
 	return _game && _application && !_application->mainMenu().isEntered();
 }
@@ -173,7 +181,8 @@ Common::Error TetraedgeEngine::loadGameStream(Common::SeekableReadStream *stream
 
 void TetraedgeEngine::configureSearchPaths() {
 	const Common::FSNode gameDataDir(ConfMan.get("path"));
-	SearchMan.addSubDirectoryMatching(gameDataDir, "Resources", 0, 5);
+	if (_gameDescription->platform != Common::kPlatformIOS)
+		SearchMan.addSubDirectoryMatching(gameDataDir, "Resources", 0, 5);
 }
 
 int TetraedgeEngine::getDefaultScreenWidth() const {
@@ -207,6 +216,7 @@ void TetraedgeEngine::registerConfigDefaults() {
 	ConfMan.registerDefault("disable_shadows", false);
 	ConfMan.registerDefault("correct_movie_aspect", true);
 }
+
 
 Common::Error TetraedgeEngine::run() {
 	if (getGameId() == "syberia")
@@ -315,5 +325,6 @@ Common::Error TetraedgeEngine::saveGameState(int slot, const Common::String &des
 void TetraedgeEngine::getSavegameThumbnail(Graphics::Surface &thumb) {
 	g_engine->getApplication()->getSavegameThumbnail(thumb);
 }
+
 
 } // namespace Tetraedge

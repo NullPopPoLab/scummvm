@@ -19,44 +19,31 @@
  *
  */
 
-/* Detection tables for A.J.'s World of Discovery / ADI Jnr. */
+#ifndef MM1_VIEWS_ENH_EXCHANGE_H
+#define MM1_VIEWS_ENH_EXCHANGE_H
 
-#ifndef GOB_DETECTION_TABLES_AJWORLD_H
-#define GOB_DETECTION_TABLES_AJWORLD_H
+#include "mm/mm1/views_enh/party_view.h"
 
-// -- DOS VGA Floppy --
+namespace MM {
+namespace MM1 {
+namespace ViewsEnh {
 
-{
-	{
-		"ajworld",
-		"",
-		AD_ENTRY1s("intro.stk", "e453bea7b28a67c930764d945f64d898", 3913628),
-		EN_ANY,
-		kPlatformDOS,
-		ADGF_NO_FLAGS,
-		GUIO2(GUIO_NOSUBTITLES, GUIO_NOSPEECH)
-	},
-	kGameTypeAJWorld,
-	kFeaturesAdLib,
-	0, 0, 0
-},
+class Exchange : public PartyView {
+private:
+	int _srcCharacter = -1;
 
+public:
+	Exchange();
+	virtual ~Exchange() {}
 
-// -- Amiga Floppy --
+	bool msgFocus(const FocusMessage &msg) override;
+	void draw() override;
+	bool msgAction(const ActionMessage &msg) override;
+	bool msgGame(const GameMessage &msg) override;
+};
 
-{
-	{
-		"ajworld",
-		"",
-		AD_ENTRY1s("intro.stk", "71e7db034890885ac96dd1be43a21c38", 556834),
-		EN_ANY,
-		kPlatformAmiga,
-		ADGF_UNSTABLE,
-		GUIO2(GUIO_NOSUBTITLES, GUIO_NOSPEECH)
-	},
-	kGameTypeAJWorld,
-	kFeaturesNone,
-	0, 0, 0
-},
+} // namespace ViewsEnh
+} // namespace MM1
+} // namespace MM
 
-#endif // GOB_DETECTION_TABLES_AJWORLD_H
+#endif

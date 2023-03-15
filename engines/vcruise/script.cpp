@@ -88,6 +88,8 @@ Instruction::Instruction(ScriptOps::ScriptOp paramOp, int32 paramArg) : op(param
 enum ProtoOp {
 	kProtoOpScript, // Use script opcode
 
+	kProtoOpNoop,
+
 	kProtoOpJumpToLabel,
 	kProtoOpLabel,
 
@@ -271,7 +273,9 @@ void ScriptCompiler::compileRoomScriptSet(RoomScriptSet *rss) {
 			Common::SharedPtr<ScreenScriptSet> sss(new ScreenScriptSet());
 			compileScreenScriptSet(sss.get());
 
-			rss->screenScripts[screenNumber] = sss;
+			// QUIRK: The tower in Reah (Room 06) has two 0cb screens, the second one is bad and must be ignored
+			if (rss->screenScripts.find(screenNumber) == rss->screenScripts.end())
+				rss->screenScripts[screenNumber] = sss;
 		} else {
 			error("Error compiling script at line %i col %i: Expected ~EROOM or ~SCR and found '%s'", static_cast<int>(state._lineNum), static_cast<int>(state._col), token.c_str());
 		}
@@ -335,18 +339,24 @@ static ScriptNamedInstruction g_namedInstructions[] = {
 	{"yes@", ProtoOp::kProtoOpScript, ScriptOps::kVarLoad},
 	{"yes!", ProtoOp::kProtoOpScript, ScriptOps::kVarStore},
 	{"cr?", ProtoOp::kProtoOpScript, ScriptOps::kItemCheck},
-	{"cr!", ProtoOp::kProtoOpScript, ScriptOps::kItemCRSet},
-	{"sr!", ProtoOp::kProtoOpScript, ScriptOps::kItemSRSet},
-	{"r!", ProtoOp::kProtoOpScript, ScriptOps::kItemRSet},
+	{"cr!", ProtoOp::kProtoOpScript, ScriptOps::kItemRemove},
+	{"sr!", ProtoOp::kProtoOpScript, ScriptOps::kItemHighlightSet},
+	{"r?", ProtoOp::kProtoOpScript, ScriptOps::kItemHaveSpace},
+	{"r!", ProtoOp::kProtoOpScript, ScriptOps::kItemAdd},
+	{"clearPocket", ProtoOp::kProtoOpScript, ScriptOps::kItemClear},
 	{"cursor!", ProtoOp::kProtoOpScript, ScriptOps::kSetCursor},
 	{"room!", ProtoOp::kProtoOpScript, ScriptOps::kSetRoom},
 	{"lmb", ProtoOp::kProtoOpScript, ScriptOps::kLMB},
 	{"lmb1", ProtoOp::kProtoOpScript, ScriptOps::kLMB1},
+	{"volumeDn2", ProtoOp::kProtoOpScript, ScriptOps::kVolumeDn2},
+	{"volumeDn3", ProtoOp::kProtoOpScript, ScriptOps::kVolumeDn3},
 	{"volumeDn4", ProtoOp::kProtoOpScript, ScriptOps::kVolumeDn4},
 	{"volumeUp3", ProtoOp::kProtoOpScript, ScriptOps::kVolumeUp3},
 	{"rnd", ProtoOp::kProtoOpScript, ScriptOps::kRandom},
 	{"drop", ProtoOp::kProtoOpScript, ScriptOps::kDrop},
 	{"dup", ProtoOp::kProtoOpScript, ScriptOps::kDup},
+	{"say1", ProtoOp::kProtoOpScript, ScriptOps::kSay1},
+	{"say2", ProtoOp::kProtoOpScript, ScriptOps::kSay3}, // FIXME: Figure out what the difference is between say2 and say3.  I think say2 is repeatable?  Maybe works as say1 instead?
 	{"say3", ProtoOp::kProtoOpScript, ScriptOps::kSay3},
 	{"say3@", ProtoOp::kProtoOpScript, ScriptOps::kSay3Get},
 	{"setTimer", ProtoOp::kProtoOpScript, ScriptOps::kSetTimer},
@@ -362,6 +372,7 @@ static ScriptNamedInstruction g_namedInstructions[] = {
 	{"+", ProtoOp::kProtoOpScript, ScriptOps::kAdd},
 	{"-", ProtoOp::kProtoOpScript, ScriptOps::kSub},
 	{"not", ProtoOp::kProtoOpScript, ScriptOps::kNot},
+	{"minus", ProtoOp::kProtoOpScript, ScriptOps::kNegate},
 	{"=", ProtoOp::kProtoOpScript, ScriptOps::kCmpEq},
 	{">", ProtoOp::kProtoOpScript, ScriptOps::kCmpGt},
 	{"<", ProtoOp::kProtoOpScript, ScriptOps::kCmpLt},
@@ -376,7 +387,9 @@ static ScriptNamedInstruction g_namedInstructions[] = {
 	{"soundL1", ProtoOp::kProtoOpScript, ScriptOps::kSoundL1},
 	{"soundL2", ProtoOp::kProtoOpScript, ScriptOps::kSoundL2},
 	{"soundL3", ProtoOp::kProtoOpScript, ScriptOps::kSoundL3},
+	{"3DsoundS2", ProtoOp::kProtoOpScript, ScriptOps::k3DSoundS2},
 	{"3DsoundL2", ProtoOp::kProtoOpScript, ScriptOps::k3DSoundL2},
+	{"stopaL", ProtoOp::kProtoOpScript, ScriptOps::kStopAL},
 	{"range", ProtoOp::kProtoOpScript, ScriptOps::kRange},
 	{"addXsound", ProtoOp::kProtoOpScript, ScriptOps::kAddXSound},
 	{"clrXsound", ProtoOp::kProtoOpScript, ScriptOps::kClrXSound},
@@ -399,6 +412,8 @@ static ScriptNamedInstruction g_namedInstructions[] = {
 	{"disc2", ProtoOp::kProtoOpScript, ScriptOps::kDisc2},
 	{"disc3", ProtoOp::kProtoOpScript, ScriptOps::kDisc3},
 
+	{"goto", ProtoOp::kProtoOpScript, ScriptOps::kGoto},
+
 	{"#if", ProtoOp::kProtoOpIf, ScriptOps::kInvalid},
 	{"#eif", ProtoOp::kProtoOpEndIf, ScriptOps::kInvalid},
 	{"#else", ProtoOp::kProtoOpElse, ScriptOps::kInvalid},
@@ -412,6 +427,8 @@ static ScriptNamedInstruction g_namedInstructions[] = {
 	{"esc_off", ProtoOp::kProtoOpScript, ScriptOps::kEscOff},
 	{"esc_get@", ProtoOp::kProtoOpScript, ScriptOps::kEscGet},
 	{"backStart", ProtoOp::kProtoOpScript, ScriptOps::kBackStart},
+	{"saveAs", ProtoOp::kProtoOpScript, ScriptOps::kSaveAs},
+	{"allowedSave", ProtoOp::kProtoOpNoop, ScriptOps::kInvalid},
 };
 
 bool ScriptCompiler::compileInstructionToken(ProtoScript &script, const Common::String &token) {
@@ -543,7 +560,7 @@ void ScriptCompiler::codeGenScript(ProtoScript &protoScript, Script &script) {
 	int32 nextLabel = 0;
 
 	// Pass 1: Collect flow control constructs, make all flow control constructs point to the index of the construct,
-	// replace Else, Case, EndIf, EndSwitch, and Default instructions with Label and JumpToLabel.
+	// replace Else, Case, EndIf, EndSwitch, and Default instructions with Label and JumpToLabel.  Clear noops.
 	for (const ProtoInstruction &instr : protoScript.instrs) {
 		switch (instr.protoOp) {
 		case kProtoOpScript:
@@ -675,6 +692,8 @@ void ScriptCompiler::codeGenScript(ProtoScript &protoScript, Script &script) {
 
 			controlFlowStack.pop_back();
 		} break;
+		case kProtoOpNoop:
+			break;
 		default:
 			error("Internal error: Unhandled proto-op");
 			break;

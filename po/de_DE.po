@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: ScummVM 1.10.0git\n"
 "Report-Msgid-Bugs-To: scummvm-devel@lists.scummvm.org\n"
-"POT-Creation-Date: 2023-03-12 02:57+0000\n"
-"PO-Revision-Date: 2023-02-12 19:20+0000\n"
+"POT-Creation-Date: 2023-03-13 19:17+0000\n"
+"PO-Revision-Date: 2023-03-13 19:34+0000\n"
 "Last-Translator: Lothar Serra Mari <lothar.serramari@scummvm.org>\n"
 "Language-Team: German <https://translations.scummvm.org/projects/scummvm/"
 "scummvm/de/>\n"
@@ -144,7 +144,7 @@ msgstr ""
 #: engines/grim/grim.cpp:359 engines/kyra/gui/saveload_eob.cpp:597
 #: engines/kyra/gui/saveload_eob.cpp:630
 #: engines/parallaction/metaengine.cpp:145
-#: engines/sci/graphics/controls32.cpp:929 engines/scumm/scumm.cpp:3463
+#: engines/sci/graphics/controls32.cpp:929 engines/scumm/scumm.cpp:3480
 #: engines/toon/toon.cpp:1502
 msgid "Yes"
 msgstr "Ja"
@@ -157,7 +157,7 @@ msgstr "Ja"
 #: engines/grim/grim.cpp:359 engines/kyra/gui/saveload_eob.cpp:597
 #: engines/kyra/gui/saveload_eob.cpp:630
 #: engines/parallaction/metaengine.cpp:151
-#: engines/sci/graphics/controls32.cpp:929 engines/scumm/scumm.cpp:3463
+#: engines/sci/graphics/controls32.cpp:929 engines/scumm/scumm.cpp:3480
 #: engines/toon/toon.cpp:1502
 msgid "No"
 msgstr "Nein"
@@ -185,10 +185,10 @@ msgstr ""
 #: engines/drascula/saveload.cpp:48 engines/grim/inputdialog.cpp:83
 #: engines/groovie/script.cpp:660 engines/parallaction/saveload.cpp:270
 #: engines/saga/music.cpp:102 engines/sci/engine/kgraphics.cpp:75
-#: engines/sci/graphics/controls32.cpp:926 engines/scumm/scumm.cpp:1134
-#: engines/scumm/scumm.cpp:1160 engines/scumm/scumm.cpp:1182
-#: engines/scumm/scumm.cpp:1535 engines/scumm/scumm.cpp:2006
-#: engines/scumm/scumm.cpp:2022 engines/sky/compact.cpp:140
+#: engines/sci/graphics/controls32.cpp:926 engines/scumm/scumm.cpp:1151
+#: engines/scumm/scumm.cpp:1177 engines/scumm/scumm.cpp:1199
+#: engines/scumm/scumm.cpp:1552 engines/scumm/scumm.cpp:2023
+#: engines/scumm/scumm.cpp:2039 engines/sky/compact.cpp:140
 #: engines/sword1/animation.cpp:529 engines/sword1/animation.cpp:560
 #: engines/sword1/animation.cpp:568 engines/sword1/control.cpp:888
 #: engines/sword1/logic.cpp:1634 engines/sword2/animation.cpp:426
@@ -2353,7 +2353,7 @@ msgstr "Spielstände"
 
 #: base/main.cpp:643
 msgid "Bad config file format. overwrite?"
-msgstr ""
+msgstr "Fehlerhaftes Format der Konfigurationsdatei. Überschreiben?"
 
 #. I18N: <Add a new folder> must match the translation done in backends/fs/android/android-saf-fs.h
 #: base/main.cpp:692
@@ -2815,12 +2815,11 @@ msgstr ""
 "Dokumentation."
 
 #: engines/engine.cpp:589
-#, fuzzy
 msgid "Skip autosave"
-msgstr "Leerer Spielstand"
+msgstr "Autosave überspringen"
 
 #: engines/engine.cpp:591
-#, fuzzy, c-format
+#, c-format
 msgid ""
 "WARNING: The autosave slot contains a saved game named %S, and an autosave "
 "is pending.\n"
@@ -2828,10 +2827,12 @@ msgid ""
 "needed.\n"
 "Alternatively, you can skip the autosave (will prompt again in 5 minutes)."
 msgstr ""
-"WARNUNG: Im Autosave-Slot befindet sich ein Spielstand namens %S. Du kannst "
-"den Spielstand entweder in einen neuen Slot verschieben, den bestehenden "
-"Spielstand überschreiben oder das automatische Speichern abbrechen (die "
-"Rückfrage wird dann bis zu einem Neustart nicht mehr erscheinen)"
+"WARNUNG: Im Autosave-Slot befindet sich ein Spielstand namens %S und ein "
+"Autosave-Vorgang ist ausstehend.\n"
+"Bitte verschiebe diesen Spielstand in einen neuen Slot oder lösche ihn, "
+"falls er nicht mehr benötigt wird.\n"
+"Alternativ kannst Du die automatische Speicherung auch überspringen (Abfrage "
+"erscheint in 5 Minuten erneut)."
 
 #: engines/engine.cpp:601
 msgid "ERROR: Could not copy the savegame to a new slot"
@@ -2983,14 +2984,12 @@ msgid "Confirm"
 msgstr "Bestätigen"
 
 #: engines/metaengine.cpp:390
-#, fuzzy
 msgid "Autosave on"
-msgstr "Automatisches Speichern"
+msgstr "Automatisches Speichern aktiviert"
 
 #: engines/metaengine.cpp:390
-#, fuzzy
 msgid "Autosave off"
-msgstr "Automatisches Speichern"
+msgstr "Automatisches Speichern deaktiviert"
 
 #: graphics/renderer.cpp:33 backends/graphics/opengl/opengl-graphics.cpp:177
 msgid "OpenGL"
@@ -4463,7 +4462,7 @@ msgstr ""
 "Schnelles Laden oder Speichern eines Spiels wird an diesem Ort nicht "
 "unterstützt"
 
-#: engines/agos/saveload.cpp:161 engines/scumm/scumm.cpp:2784
+#: engines/agos/saveload.cpp:161 engines/scumm/scumm.cpp:2801
 #, c-format
 msgid ""
 "Failed to load saved game from file:\n"
@@ -4474,7 +4473,7 @@ msgstr ""
 "\n"
 "%s"
 
-#: engines/agos/saveload.cpp:196 engines/scumm/scumm.cpp:2771
+#: engines/agos/saveload.cpp:196 engines/scumm/scumm.cpp:2788
 #, c-format
 msgid ""
 "Failed to save game to file:\n"
@@ -4485,7 +4484,7 @@ msgstr ""
 "\n"
 "%s"
 
-#: engines/agos/saveload.cpp:204 engines/scumm/scumm.cpp:2800
+#: engines/agos/saveload.cpp:204 engines/scumm/scumm.cpp:2817
 #, c-format
 msgid ""
 "Successfully saved game in file:\n"
@@ -4711,8 +4710,8 @@ msgstr ""
 #: engines/mohawk/detection_tables.h:2492
 #: engines/mohawk/detection_tables.h:3562
 #: engines/mohawk/detection_tables.h:3577 engines/myst3/detection.cpp:142
-#: engines/saga/detection_tables.h:46 engines/sci/detection_tables.h:5183
-#: engines/sci/detection_tables.h:5191 engines/stark/detection.cpp:319
+#: engines/saga/detection_tables.h:46 engines/sci/detection_tables.h:5190
+#: engines/sci/detection_tables.h:5198 engines/stark/detection.cpp:319
 #: engines/teenagent/detection.cpp:117 engines/toltecs/detection.cpp:210
 #: engines/trecision/detection.cpp:201 engines/zvision/detection_tables.h:127
 msgid "Missing game code"
@@ -4970,7 +4969,7 @@ msgstr ""
 "wenn Du das Spiel erneut startest.\n"
 
 #: engines/buried/saveload.cpp:165 engines/mtropolis/saveload.cpp:158
-#: engines/vcruise/runtime.cpp:2291
+#: engines/vcruise/vcruise.cpp:245
 msgid "Saved game was created with a newer version of ScummVM. Unable to load."
 msgstr ""
 "Dieser Spielstand wurde mit einer neueren Version von ScummVM erstellt und "
@@ -6470,20 +6469,20 @@ msgstr "Debug-Overlay umschalten"
 msgid "Force any playing movies to end"
 msgstr "Erzwinge, dass alle Videos bis zum Ende abgespielt werden"
 
-#: engines/mtropolis/saveload.cpp:142 engines/vcruise/runtime.cpp:2277
+#: engines/mtropolis/saveload.cpp:142
 msgid "Failed to read version information from save file"
 msgstr ""
 "Die Versions-Informationen konnten nicht aus der Spielstand-Datei ausgelesen "
 "werden"
 
-#: engines/mtropolis/saveload.cpp:150 engines/vcruise/runtime.cpp:2284
+#: engines/mtropolis/saveload.cpp:150 engines/vcruise/vcruise.cpp:240
 msgid ""
 "Failed to load save, the save file doesn't contain valid version information."
 msgstr ""
 "Spielstand konnte nicht geladen werden, da die Spielstand-Datei keine "
 "gültigen Versions-Informationen enthält."
 
-#: engines/mtropolis/saveload.cpp:166 engines/vcruise/runtime.cpp:2298
+#: engines/mtropolis/saveload.cpp:166 engines/vcruise/vcruise.cpp:250
 msgid ""
 "Saved game was created with an earlier, incompatible version of ScummVM. "
 "Unable to load."
@@ -6781,7 +6780,7 @@ msgstr "Dieser Menüpunkt ist noch nicht implementiert"
 #. I18N: Plumbers is the title of the game. 3DO is the name of platform
 #: engines/plumbers/metaengine.cpp:51
 msgid "3DO Plumbers requires RGB support."
-msgstr ""
+msgstr "Die 3DO-Version von Plumbers benötigt RGB-Unterstützung."
 
 #: engines/queen/metaengine.cpp:36
 msgid "Alternative intro"
@@ -6984,7 +6983,7 @@ msgstr "Casio MT-540"
 msgid "Casio CT-460 / CSM-1"
 msgstr "Casio CT-460 / CSM-1"
 
-#: engines/sci/detection_tables.h:4474
+#: engines/sci/detection_tables.h:4481
 msgid "Incomplete game detected. You have to copy data from all the CDs."
 msgstr ""
 "Unvollständiges Spiel erkannt. Du musst die Dateien aller CDs kopieren."
@@ -7185,7 +7184,7 @@ msgstr ""
 "In diesem Fall müssen Sie den origialen Patch von Sierra anwenden.\n"
 "\n"
 
-#: engines/scumm/detection_internal.h:358
+#: engines/scumm/detection_internal.h:368
 msgid ""
 "This version of Monkey Island can't be played, because Limited Run Games "
 "provided corrupted DISK04.LEC and 903.LFL files.\n"
@@ -7204,22 +7203,19 @@ msgstr ""
 "Dumps wiederherstellen kannst."
 
 #: engines/scumm/dialog-sessionselector.cpp:50
-#, fuzzy
-#| msgid "Saving game..."
 msgid "Querying games..."
-msgstr "Spiel wird gespeichert..."
+msgstr "Spiele werden abgefragt..."
 
 #. I18N: Join online multiplayer game
-#: engines/scumm/dialog-sessionselector.cpp:59 engines/scumm/scumm.cpp:3469
+#: engines/scumm/dialog-sessionselector.cpp:59 engines/scumm/scumm.cpp:3486
 msgid "Join"
-msgstr ""
+msgstr "Beitreten"
 
 #. I18N: Online multiplayer games were found
 #: engines/scumm/dialog-sessionselector.cpp:109
-#, fuzzy, c-format
-#| msgid "No new %S available"
+#, c-format
 msgid "Found %d available games."
-msgstr "Kein neues Pack verfügbar"
+msgstr "%d verfügbare Spiele gefunden."
 
 #. I18N: Previous page button
 #: engines/scumm/dialogs.cpp:279
@@ -7358,18 +7354,19 @@ msgstr ""
 
 #: engines/scumm/dialogs.cpp:1366
 msgid "Multiplayer Server:"
-msgstr ""
+msgstr "Mehrspieler-Server:"
 
 #: engines/scumm/dialogs.cpp:1372
-#, fuzzy
 msgid "Online Server:"
-msgstr "Server:"
+msgstr "Online-Server:"
 
 #: engines/scumm/dialogs.cpp:1373
 msgid ""
 "Address of the server to connect to for online play.  It must start with "
 "either \"https://\" or \"http://\" schemas."
 msgstr ""
+"Adresse des Servers, zu dem Du dich für Online-Spiele verbinden möchstest.  "
+"Sie muss mit \"https://\" oder \"http://\" beginnen."
 
 #: engines/scumm/dialogs.cpp:1375
 msgid "Enable online competitive mods"
@@ -7381,27 +7378,32 @@ msgstr ""
 
 #: engines/scumm/dialogs.cpp:1379
 msgid "Enable connection to Multiplayer Server"
-msgstr ""
+msgstr "Verbindung zum Mehrspieler-Server aktivieren"
 
 #: engines/scumm/dialogs.cpp:1379
 msgid ""
 "Toggles the connection to the server that allows hosting and joining online "
 "multiplayer games over the Internet."
 msgstr ""
+"Aktiviert und deaktiviert die Verbindung zum Server, der die Unterstützung "
+"für Mehrspieler-Spiele über das Internet erlaubt."
 
 #: engines/scumm/dialogs.cpp:1380
 msgid "Host games over LAN"
-msgstr ""
+msgstr "Spiele über LAN hosten"
 
 #: engines/scumm/dialogs.cpp:1380
 msgid "Allows the game sessions to be discovered over your local area network."
 msgstr ""
+"Die Spiele-Sitzungen können über dein lokales Netzwerk gefunden werden."
 
 #: engines/scumm/dialogs.cpp:1382
 msgid ""
 "Address of the server to connect to for hosting and joining online game "
 "sessions."
 msgstr ""
+"Adresse des Servers, über den die Verbindung zu Online-Spielen hergestellt "
+"wird."
 
 #: engines/scumm/help.cpp:72
 msgid "Common keyboard commands:"
@@ -8035,7 +8037,7 @@ msgstr ""
 
 #: engines/scumm/metaengine.cpp:696
 msgid "Enable the \"A Pirate I Was Meant To Be\" song"
-msgstr ""
+msgstr "Aktiviere den \"A Pirate I Was Meant to Be\"-Song"
 
 #: engines/scumm/metaengine.cpp:697
 msgid ""
@@ -8043,38 +8045,37 @@ msgid ""
 "Meant To Be\", \t\twhich was cut in international releases. Beware though: "
 "subtitles may not be fully translated."
 msgstr ""
+"Aktiviere den Song \"A Pirate I Was Meant To Be\" am Anfang von Teil 3 des "
+"Spiels,\t\tder in den internationalen Veröffentlichungen entfernt wurde. "
+"Bitte beachte: Die Untertitel sind möglicherweise nicht vollständig "
+"übersetzt."
 
 #: engines/scumm/metaengine.cpp:770
-#, fuzzy
 msgid "Down Left"
-msgstr "Nach links drehen"
+msgstr "Links unten"
 
 #: engines/scumm/metaengine.cpp:783
-#, fuzzy
 msgid "Down Right"
-msgstr "Nach rechts drehen"
+msgstr "Rechts unten"
 
 #: engines/scumm/metaengine.cpp:803
-#, fuzzy
 msgid "Up Left"
-msgstr "Links"
+msgstr "Links oben"
 
 #: engines/scumm/metaengine.cpp:816
-#, fuzzy
 msgid "Up Right"
-msgstr "Rechts"
+msgstr "Rechts oben"
 
 #: engines/scumm/metaengine.cpp:828
-#, fuzzy
 msgid "Switch weapon"
-msgstr "Bildschirme wechseln"
+msgstr "Waffe wechseln"
 
 #. I18N: Lets one skip the bike/car fight sequences in Full Throttle
 #: engines/scumm/metaengine.cpp:842
 msgid "Win the bike fight cheat"
 msgstr "Cheat: Bike-Kampf gewinnen"
 
-#: engines/scumm/scumm.cpp:279
+#: engines/scumm/scumm.cpp:281
 msgid ""
 "You have enabled 'aspect ratio correction'. However, FM-TOWNS' natural "
 "resolution is 320x240, which doesn't allow aspect ratio correction.\n"
@@ -8087,7 +8088,7 @@ msgstr ""
 "Ein korrektes Seitenverhältnis kann erreicht werden, in dem im Engine-Tab "
 "die Auflösung auf 320x200 begrenzt wird."
 
-#: engines/scumm/scumm.cpp:1133
+#: engines/scumm/scumm.cpp:1150
 msgid ""
 "Could not find the 'Indy' Macintosh executable. High-resolution fonts will\n"
 "be disabled."
@@ -8096,7 +8097,7 @@ msgstr ""
 "gefunden.\n"
 "Hochauflösende Schriften werden deaktiviert."
 
-#: engines/scumm/scumm.cpp:1159
+#: engines/scumm/scumm.cpp:1176
 msgid ""
 "Could not find the 'Loom' Macintosh executable. Music and high-resolution\n"
 "versions of font and cursor will be disabled."
@@ -8104,7 +8105,7 @@ msgstr ""
 "Die Programmdatei für die Macintosh-Version von \"Loom\" nicht gefunden.\n"
 "Musik und hochauflösende Schriften werden deaktiviert."
 
-#: engines/scumm/scumm.cpp:1181
+#: engines/scumm/scumm.cpp:1198
 msgid ""
 "Could not find the 'Monkey Island' Macintosh executable to read the\n"
 "instruments from. Music will be disabled."
@@ -8112,7 +8113,7 @@ msgstr ""
 "Macintosh-Programmdatei für Instrumente in \"Monkey Island\" nicht\n"
 "gefunden. Musik wird abgeschaltet."
 
-#: engines/scumm/scumm.cpp:1532
+#: engines/scumm/scumm.cpp:1549
 msgid ""
 "Audio files compressed with ScummVM Tools were detected; *.BUN/*.SOU\n"
 "compression is not supported anymore for this game, audio will be disabled.\n"
@@ -8126,7 +8127,7 @@ msgstr ""
 "Kompression von\n"
 "den originalen Medien."
 
-#: engines/scumm/scumm.cpp:2004
+#: engines/scumm/scumm.cpp:2021
 #, c-format
 msgid ""
 "Native MIDI support requires the Roland Upgrade from LucasArts,\n"
@@ -8136,7 +8137,7 @@ msgstr ""
 "Roland-Upgrade von LucasArts, aber %s\n"
 "fehlt. Stattdessen wird AdLib verwendet."
 
-#: engines/scumm/scumm.cpp:2020
+#: engines/scumm/scumm.cpp:2037
 msgid ""
 "This particular version of Monkey Island 1 is known to miss some\n"
 "required resources for MT-32. Using AdLib instead."
@@ -8144,7 +8145,7 @@ msgstr ""
 "Diese Version von Monkey Island 1 ist dafür bekannt, dass einige\n"
 "für MT-32 benötigte Ressourcen fehlen. Stattdessen wird AdLib verwendet."
 
-#: engines/scumm/scumm.cpp:3360
+#: engines/scumm/scumm.cpp:3377
 msgid ""
 "Usually, Maniac Mansion would start now. But for that to work, the game "
 "files for Maniac Mansion have to be in the 'Maniac' directory inside the "
@@ -8155,14 +8156,14 @@ msgstr ""
 "im Startmenü von ScummVM und wählen das Verzeichnis \"Maniac\" im "
 "Verzeichnis dieses Spiels aus."
 
-#: engines/scumm/scumm.cpp:3469
-#, fuzzy
+#: engines/scumm/scumm.cpp:3486
 msgid "Would you like to host or join a network play session?"
-msgstr "Möchstest Du ein Spiel speichern oder fortsetzen?"
-
-#: engines/scumm/scumm.cpp:3469
-msgid "Host"
 msgstr ""
+"Möchtest Du ein Spiel über das Netzwerk hosten oder einem Spiel beitreten?"
+
+#: engines/scumm/scumm.cpp:3486
+msgid "Host"
+msgstr "Hosten"
 
 #: engines/scumm/imuse/drivers/amiga.cpp:660
 msgid ""
@@ -8866,23 +8867,44 @@ msgid "Ultima VIII Debug"
 msgstr "Ultima VIII-Fehlersuche"
 
 #: engines/vcruise/vcruise.cpp:76
-#, fuzzy
 msgid "This game requires JPEG support, which was not compiled in."
-msgstr ""
-"Dieses Spiel benötigt die HeroCraft-Engine, welche nicht zu dem Programmcode "
-"hinzugefügt wurde."
+msgstr "Dieses Spiel benötigt JPEG-Unterstützung, die nicht vorhanden ist."
 
 #: engines/vcruise/vcruise.cpp:83
 msgid ""
 "Music for this game requires Ogg Vorbis support, which was not compiled in.\n"
 "The game will still play, but will not have any music."
 msgstr ""
+"Die Musikwiedergabe in diesem Spiel benötigt Unterstützung für Ogg Vorbis, "
+"die nicht vorhanden ist.\n"
+"Das Spiel wird spielbar sein, jedoch ohne Musik wiedergegeben."
 
 #: engines/vcruise/vcruise.cpp:93
 msgid ""
 "Music for this game requires MP3 support, which was not compiled in.\n"
 "The game will still play, but will not have any music."
 msgstr ""
+"Die Musikwiedergabe in diesem Spiel benötigt Unterstützung für MP3, die "
+"nicht vorhanden ist.\n"
+"Das Spiel wird spielbar sein, jedoch ohne Musik wiedergegeben."
+
+#: engines/vcruise/vcruise.cpp:230
+msgid "Failed to load save, the save data appears to be damaged."
+msgstr ""
+"Spielstand konnte nicht geladen werden, da die Spielstand-Datei vermutlich "
+"beschädigt ist."
+
+#: engines/vcruise/vcruise.cpp:235
+msgid "Failed to read version information from save file."
+msgstr ""
+"Die Versions-Informationen konnten nicht aus der Spielstand-Datei ausgelesen "
+"werden."
+
+#: engines/vcruise/vcruise.cpp:255
+msgid "An unknown error occurred while attempting to load the saved game."
+msgstr ""
+"Beim Versuch, die Spielstand-Dateien zu laden, ist ein unbekannte Fehler "
+"aufgetreten."
 
 #: engines/wintermute/metaengine.cpp:42
 msgid "Show FPS-counter"

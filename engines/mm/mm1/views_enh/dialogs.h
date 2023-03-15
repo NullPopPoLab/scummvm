@@ -25,15 +25,16 @@
 #include "mm/mm1/events.h"
 #include "mm/mm1/views_enh/create_characters.h"
 #include "mm/mm1/views/locations/inn.h"
-#include "mm/mm1/views/protect.h"
 #include "mm/mm1/views/title.h"
 #include "mm/mm1/views_enh/character_info.h"
 #include "mm/mm1/views_enh/character_select.h"
 #include "mm/mm1/views_enh/characters.h"
+#include "mm/mm1/views_enh/exchange.h"
 #include "mm/mm1/views_enh/game.h"
 #include "mm/mm1/views_enh/game_messages.h"
 #include "mm/mm1/views_enh/main_menu.h"
 #include "mm/mm1/views_enh/map_popup.h"
+#include "mm/mm1/views_enh/protect.h"
 #include "mm/mm1/views_enh/quick_ref.h"
 #include "mm/mm1/views_enh/search.h"
 #include "mm/mm1/views_enh/title.h"
@@ -55,17 +56,9 @@ namespace ViewsEnh {
 
 struct Dialogs {
 private:
-	ViewsEnh::CreateCharacters _createCharacters;
-	Views::Protect _protect;
-	ViewsEnh::Title _title;
-	ViewsEnh::Characters _characters;
 	ViewsEnh::Interactions::Statue _statue;
 	ViewsEnh::Locations::Inn _inn;
 	ViewsEnh::Locations::Market _market;
-	ViewsEnh::Search _search;
-	ViewsEnh::Trap _trap;
-	ViewsEnh::Unlock _unlock;
-	ViewsEnh::WhoWillTry _whoWillTry;
 	ViewsEnh::Locations::Tavern _tavern;
 	ViewsEnh::Locations::Temple _temple;
 	ViewsEnh::Locations::Training _training;
@@ -73,11 +66,20 @@ private:
 	ViewsEnh::Spells::Spellbook _spellbook;
 	ViewsEnh::CharacterInfo _characterInfo;
 	ViewsEnh::CharacterSelect _characterSelect;
+	ViewsEnh::Characters _characters;
+	ViewsEnh::CreateCharacters _createCharacters;
+	ViewsEnh::Exchange _exchange;
 	ViewsEnh::Game _game;
 	ViewsEnh::GameMessages _gameMessages;
 	ViewsEnh::MainMenu _mainMenu;
 	ViewsEnh::MapPopup _mapPopup;
+	ViewsEnh::Protect _protect;
 	ViewsEnh::QuickRef _quickRef;
+	ViewsEnh::Search _search;
+	ViewsEnh::Title _title;
+	ViewsEnh::Trap _trap;
+	ViewsEnh::Unlock _unlock;
+	ViewsEnh::WhoWillTry _whoWillTry;
 public:
 	Dialogs() {}
 };

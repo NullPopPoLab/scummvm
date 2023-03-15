@@ -24,11 +24,20 @@ For a more comprehensive changelog of the latest experimental code, see:
    - Added support for Russian Grim Fandango translations from Fargus,
      ENPY and 7Wolf.
 
+ SCUMM:
+   - Added support for unpacked RuSCUMM patches for Russian localizations.
+
  Sherlock:
    - Added support for Chinese Serrated Scalpel.
 
  Sword2:
    - Added support for Chinese translation.
+
+ Ultima:
+   - Improve Ultima VI responsiveness
+   - Fix crash loading Ultima VI savegames when dialogs are open.
+   - Fix ordering of generated items in Ultima VI
+   - Fix auto-readying throwing weapons in Ultima VI
 
  Xeen:
    - Renamed 'xeen' engine to 'mm' for Might & Magic.

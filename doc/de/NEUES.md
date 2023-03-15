@@ -24,11 +24,20 @@ Umfangreichere Informationen über die Änderungen des aktuellen Codes findest D
    - Unterstützung für die von Fargus, ENPY und 7Wolf erstellte russische Version
      von Grim Fandango hinzugefügt.
 
+ SCUMM:
+   - Unterstützung für die entpackten RuSCUMM-Patches für russische Übersetzungen hinzugefügt.
+
  Sherlock:
    - Unterstützung für die chinesische Version von Serrated Scalpel hinzugefügt.
 
  Sword2:
    - Unterstützung für die chinesische Übersetzung hinzugefügt.
+
+ Ultima:
+   - Reaktionsgeschwindigkeit von Ultima VI verbessert.
+   - Absturz beim Laden von Spielständen in Ultima VI behoben, der auftritt, wenn Dialoge geöffnet sind.
+   - Sortierung der erzeugten Items in Ultima VI korrigiert.
+   - Automatische Ausrüstung von Wurf-Waffen in Ultima VI korrigiert.
 
  Xeen:
    - Die Engine "xeen" wurde für Might & Magic zu "mm" umbenannt.

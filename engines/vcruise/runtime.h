@@ -137,6 +137,7 @@ struct ScriptEnvironmentVars {
 	bool lmbDrag;
 	uint panInteractionID;
 	uint fpsOverride;
+	uint lastHighlightedItem;
 };
 
 struct SfxSound {
@@ -261,8 +262,27 @@ struct FrameData2 {
 	uint16 unknown;	// Subarea or something?
 };
 
+struct InventoryItem {
+	InventoryItem();
+
+	Common::SharedPtr<Graphics::Surface> graphic;
+	uint itemID;
+	bool highlighted;
+};
+
 class Runtime {
 public:
+	enum LoadGameOutcome {
+		kLoadGameOutcomeSucceeded,
+
+		kLoadGameOutcomeSaveDataCorrupted,
+
+		kLoadGameOutcomeMissingVersion,
+		kLoadGameOutcomeInvalidVersion,
+		kLoadGameOutcomeSaveIsTooNew,
+		kLoadGameOutcomeSaveIsTooOld,
+	};
+
 	Runtime(OSystem *system, Audio::Mixer *mixer, const Common::FSNode &rootFSNode, VCruiseGameID gameID);
 	virtual ~Runtime();
 
@@ -283,7 +303,7 @@ public:
 	bool canLoad() const;
 
 	void saveGame(Common::WriteStream *stream) const;
-	bool loadGame(Common::ReadStream *stream);
+	LoadGameOutcome loadGame(Common::ReadStream *stream);
 
 	bool bootGame(bool newGame);
 
@@ -397,6 +417,19 @@ private:
 		kPanoramaStatePanningDown,
 	};
 
+	static const uint kPanLeftInteraction = 1;
+	static const uint kPanDownInteraction = 2;
+	static const uint kPanRightInteraction = 3;
+	static const uint kPanUpInteraction = 4;
+
+	static const uint kPanoramaLeftFlag = 1;
+	static const uint kPanoramaRightFlag = 2;
+	static const uint kPanoramaUpFlag = 4;
+	static const uint kPanoramaDownFlag = 8;
+	static const uint kPanoramaHorizFlags = (kPanoramaLeftFlag | kPanoramaRightFlag);
+
+	static const uint kNumInventorySlots = 6;
+
 	struct OSEvent {
 		OSEvent();
 
@@ -470,7 +503,15 @@ private:
 	void panoramaActivate();
 
 	bool computeFaceDirectionAnimation(uint desiredDirection, const AnimationDef *&outAnimDef, uint &outInitialFrame, uint &outStopFrame);
-	
+
+	void inventoryAddItem(uint item);
+	void inventoryRemoveItem(uint item);
+	void drawInventory(uint slot);
+	void resetInventoryHighlights();
+
+	Common::String getFileNameForItemGraphic(uint itemID) const;
+	Common::SharedPtr<Graphics::Surface> loadGraphic(const Common::String &graphicName, bool required);
+
 	// Script things
 	void scriptOpNumber(ScriptArg_t arg);
 	void scriptOpRotate(ScriptArg_t arg);
@@ -492,9 +533,11 @@ private:
 	void scriptOpVarStore(ScriptArg_t arg);
 
 	void scriptOpItemCheck(ScriptArg_t arg);
-	void scriptOpItemCRSet(ScriptArg_t arg);
-	void scriptOpItemSRSet(ScriptArg_t arg);
-	void scriptOpItemRSet(ScriptArg_t arg);
+	void scriptOpItemRemove(ScriptArg_t arg);
+	void scriptOpItemHighlightSet(ScriptArg_t arg);
+	void scriptOpItemAdd(ScriptArg_t arg);
+	void scriptOpItemHaveSpace(ScriptArg_t arg);
+	void scriptOpItemClear(ScriptArg_t arg);
 
 	void scriptOpSetCursor(ScriptArg_t arg);
 	void scriptOpSetRoom(ScriptArg_t arg);
@@ -506,7 +549,9 @@ private:
 	void scriptOpSoundL1(ScriptArg_t arg);
 	void scriptOpSoundL2(ScriptArg_t arg);
 	void scriptOpSoundL3(ScriptArg_t arg);
+	void scriptOp3DSoundS2(ScriptArg_t arg);
 	void scriptOp3DSoundL2(ScriptArg_t arg);
+	void scriptOpStopAL(ScriptArg_t arg);
 	void scriptOpRange(ScriptArg_t arg);
 	void scriptOpAddXSound(ScriptArg_t arg);
 	void scriptOpClrXSound(ScriptArg_t arg);
@@ -524,11 +569,14 @@ private:
 	void scriptOpSParmX(ScriptArg_t arg);
 	void scriptOpSAnimX(ScriptArg_t arg);
 
+	void scriptOpVolumeDn2(ScriptArg_t arg);
+	void scriptOpVolumeDn3(ScriptArg_t arg);
 	void scriptOpVolumeDn4(ScriptArg_t arg);
 	void scriptOpVolumeUp3(ScriptArg_t arg);
 	void scriptOpRandom(ScriptArg_t arg);
 	void scriptOpDrop(ScriptArg_t arg);
 	void scriptOpDup(ScriptArg_t arg);
+	void scriptOpSay1(ScriptArg_t arg);
 	void scriptOpSay3(ScriptArg_t arg);
 	void scriptOpSay3Get(ScriptArg_t arg);
 	void scriptOpSetTimer(ScriptArg_t arg);
@@ -544,6 +592,7 @@ private:
 	void scriptOpOr(ScriptArg_t arg);
 	void scriptOpAdd(ScriptArg_t arg);
 	void scriptOpSub(ScriptArg_t arg);
+	void scriptOpNegate(ScriptArg_t arg);
 	void scriptOpCmpEq(ScriptArg_t arg);
 	void scriptOpCmpLt(ScriptArg_t arg);
 	void scriptOpCmpGt(ScriptArg_t arg);
@@ -556,10 +605,13 @@ private:
 	void scriptOpDisc2(ScriptArg_t arg);
 	void scriptOpDisc3(ScriptArg_t arg);
 
+	void scriptOpGoto(ScriptArg_t arg);
+
 	void scriptOpEscOn(ScriptArg_t arg);
 	void scriptOpEscOff(ScriptArg_t arg);
 	void scriptOpEscGet(ScriptArg_t arg);
 	void scriptOpBackStart(ScriptArg_t arg);
+	void scriptOpSaveAs(ScriptArg_t arg);
 
 	void scriptOpAnimName(ScriptArg_t arg);
 	void scriptOpValueName(ScriptArg_t arg);
@@ -575,6 +627,13 @@ private:
 
 	Common::Array<Common::SharedPtr<Graphics::WinCursorGroup> > _cursors;		// Cursors indexed as CURSOR_CUR_##
 	Common::Array<Common::SharedPtr<Graphics::WinCursorGroup> > _cursorsShort;	// Cursors indexed as CURSOR_#
+
+	InventoryItem _inventory[kNumInventorySlots];
+
+	Common::SharedPtr<Graphics::Surface> _trayCompassGraphic;
+	Common::SharedPtr<Graphics::Surface> _trayBackgroundGraphic;
+	Common::SharedPtr<Graphics::Surface> _trayHighlightGraphic;
+	Common::SharedPtr<Graphics::Surface> _trayCornerGraphic;
 
 	uint _panCursors[kPanCursorMaxCount];
 
@@ -597,23 +656,14 @@ private:
 
 	StaticAnimation _idleAnimations[kNumDirections];
 	bool _haveIdleAnimations[kNumDirections];
+	bool _haveIdleStaticAnimation;
+	Common::String _idleCurrentStaticAnimation;
 	StaticAnimParams _pendingStaticAnimParams;
 
 	AnimationDef _postFacingAnimDef;
 
 	Common::HashMap<uint32, int32> _variables;
 	Common::HashMap<uint, uint32> _timers;
-
-	static const uint kPanLeftInteraction = 1;
-	static const uint kPanDownInteraction = 2;
-	static const uint kPanRightInteraction = 3;
-	static const uint kPanUpInteraction = 4;
-
-	static const uint kPanoramaLeftFlag = 1;
-	static const uint kPanoramaRightFlag = 2;
-	static const uint kPanoramaUpFlag = 4;
-	static const uint kPanoramaDownFlag = 8;
-	static const uint kPanoramaHorizFlags = (kPanoramaLeftFlag | kPanoramaRightFlag);
 
 	uint _panoramaDirectionFlags;
 
@@ -713,8 +763,8 @@ private:
 	static const int kPanoramaPanningMarginY = 11;
 
 	static const uint kSaveGameIdentifier = 0x53566372;
-	static const uint kSaveGameCurrentVersion = 1;
-	static const uint kSaveGameEarliestSupportedVersion = 1;
+	static const uint kSaveGameCurrentVersion = 2;
+	static const uint kSaveGameEarliestSupportedVersion = 2;
 };
 
 } // End of namespace VCruise

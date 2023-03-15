@@ -20,6 +20,8 @@
  */
 
 #include "mm/mm1/views_enh/search.h"
+#include "mm/mm1/views_enh/select_number.h"
+#include "mm/mm1/views_enh/trap.h"
 #include "mm/mm1/views_enh/who_will_try.h"
 #include "mm/mm1/globals.h"
 #include "mm/mm1/sound.h"
@@ -28,7 +30,7 @@ namespace MM {
 namespace MM1 {
 namespace ViewsEnh {
 
-Search::Search() : ScrollView("Search") {
+Search::Search() : SelectNumber("Search") {
 	_bounds = Common::Rect(0, 144, 234, 200);
 	_escSprite.load("esc.icn");
 	addButton(&_escSprite, Common::Point(79, 30), 0, KEYBIND_ESCAPE, true);
@@ -57,14 +59,14 @@ bool Search::msgFocus(const FocusMessage &msg) {
 	_lineNum = 0;
 	_bounds = Common::Rect(0, 144, 234, 200);
 
-	if (_mode == FOCUS_GET_TREASURE) {
+	if (dynamic_cast<Trap *>(msg._priorView) != nullptr) {
 		// Returning from trap display
 		if (g_globals->_party.checkPartyDead())
 			return true;
 
 		getTreasure();
 	} else {
-		_mode = INITIAL;
+		setMode(INITIAL);
 	}
 
 	return true;
@@ -75,7 +77,7 @@ void Search::draw() {
 	setButtonEnabled(0, _mode == OPTIONS);
 
 	//if (_mode != GET_ITEMS)
-	ScrollView::draw();
+	SelectNumber::draw();
 
 	switch (_mode) {
 	case INITIAL:
@@ -120,12 +122,15 @@ bool Search::msgKeypress(const KeypressMessage &msg) {
 	case OPTIONS:
 		switch (msg.keycode) {
 		case Common::KEYCODE_1:
+			closeNumbers();
 			openContainer();
 			break;
 		case Common::KEYCODE_2:
+			closeNumbers();
 			findRemoveTrap();
 			break;
 		case Common::KEYCODE_3:
+			closeNumbers();
 			detectMagicTrap();
 			break;
 		default:
@@ -187,17 +192,17 @@ void Search::timeout() {
 		int gfxNum = g_globals->_treasure._container < WOODEN_BOX ? 4 : 2;
 		send("View", DrawGraphicMessage(gfxNum + 65));
 
-		_mode = OPTIONS;
+		setMode(OPTIONS);
 		draw();
 		break;
 	}
 	case RESPONSE:
-		_mode = OPTIONS;
+		setMode(OPTIONS);
 		draw();
 		break;
 
 	case GET_TREASURE:
-		_mode = GET_ITEMS;
+		setMode(GET_ITEMS);
 		draw();
 		break;
 
@@ -215,8 +220,8 @@ void Search::timeout() {
 }
 
 void Search::openContainer() {
-	_removing = false;
-	if (!whoWillTry())
+	_optionMode = OMODE_OPEN;
+	if (whoWillTry())
 		openContainer2();
 }
 
@@ -228,7 +233,6 @@ void Search::openContainer2() {
 
 		if (getRandomNumber(thresold + 5) < thresold) {
 			// Triggered a trap
-			_mode = FOCUS_GET_TREASURE;
 			g_events->send("Trap", GameMessage("TRAP"));
 			return;
 		}
@@ -238,8 +242,8 @@ void Search::openContainer2() {
 }
 
 void Search::findRemoveTrap() {
-	_removing = true;
-	if (!whoWillTry())
+	_optionMode = OMODE_REMOVE_TRAP;
+	if (whoWillTry())
 		findRemoveTrap2();
 }
 
@@ -254,22 +258,30 @@ void Search::findRemoveTrap2() {
 			return;
 		}
 	}
+
+	getTreasure();
 }
 
 void Search::detectMagicTrap() {
+	_optionMode = OMODE_DETECT;
+	if (whoWillTry())
+		detectMagicTrap2();
+}
+
+void Search::detectMagicTrap2() {
 	Character &c = *g_globals->_currCharacter;
-	_mode = RESPONSE;
+	setMode(RESPONSE);
 
 	if (c._class == PALADIN || c._class == CLERIC) {
 		Sound::sound(SOUND_2);
-		clearSurface();
-		writeString(6, 2, STRING["dialogs.search.bad_class"]);
+		ScrollView::draw();
+		writeLine(2, STRING["dialogs.search.bad_class"], ALIGN_MIDDLE);
 		delaySeconds(4);
 
 	} else if (c._sp == 0) {
 		Sound::sound(SOUND_2);
-		clearSurface();
-		writeString(6, 2, STRING["dialogs.search.no_sp"]);
+		ScrollView::draw();
+		writeLine(2, STRING["dialogs.search.no_sp"], ALIGN_MIDDLE);
 		delaySeconds(4);
 
 	} else {
@@ -278,11 +290,10 @@ void Search::detectMagicTrap() {
 			g_globals->_treasure.getGems() ? 'Y' : 'N';
 		char trapped = g_globals->_treasure._trapType == 1 ? 'Y' : 'N';
 
-		clearSurface();
-		writeString(5, 1, Common::String::format(
+		ScrollView::draw();
+		writeLine(1, Common::String::format(
 			STRING["dialogs.search.magic_trap"].c_str(),
-			magic, trapped));
-
+			magic, trapped), ALIGN_MIDDLE);
 		delaySeconds(8);
 	}
 }
@@ -293,6 +304,7 @@ bool Search::whoWillTry() {
 		return true;
 	} else {
 		// Switch to mode to ask which character to use
+		close();
 		WhoWillTry::display([](int charNum) {
 			static_cast<Search *>(g_events->findView("Search"))->whoWillTry(charNum);
 		});
@@ -301,26 +313,32 @@ bool Search::whoWillTry() {
 }
 
 void Search::whoWillTry(int charNum) {
+	addView();
+
 	if (charNum == -1) {
 		// Character selection aborted, go back to options
-		_mode = OPTIONS;
+		setMode(OPTIONS);
 
 	} else {
 		// Character selected, proceed with given action
 		g_globals->_currCharacter = &g_globals->_party[charNum];
 
-		if (_removing) {
-			findRemoveTrap2();
-		} else {
+		switch (_optionMode) {
+		case OMODE_OPEN:
 			openContainer2();
+			break;
+		case OMODE_REMOVE_TRAP:
+			findRemoveTrap2();
+			break;
+		case OMODE_DETECT:
+			detectMagicTrap2();
+			break;
 		}
 	}
-
-	open();
 }
 
 void Search::getTreasure() {
-	_mode = GET_TREASURE;
+	setMode(GET_TREASURE);
 	_bounds = Common::Rect(0, 144, 234, 200);
 
 	// Display a graphic for the container type
@@ -331,7 +349,7 @@ void Search::getTreasure() {
 }
 
 void Search::drawTreasure() {
-	writeString(15, 0, STRING["dialogs.search.it_opens"]);
+	writeLine(0, STRING["dialogs.search.it_opens"], ALIGN_MIDDLE);
 
 	// Split up the gold across the party
 	uint32 goldPerPerson = g_globals->_treasure.getGold() /
@@ -347,7 +365,7 @@ void Search::drawTreasure() {
 		c._gold = newGold;
 	}
 	
-	writeString(0, 2, Common::String::format(
+	writeLine(2, Common::String::format(
 		STRING["dialogs.search.each_share"].c_str(),
 		goldPerPerson));
 	g_globals->_treasure.setGold(0);
@@ -362,7 +380,7 @@ void Search::drawTreasure() {
 		uint charNum = getRandomNumber(g_globals->_party.size()) - 1;
 		Character &c = g_globals->_party[charNum];
 
-		writeString(0, _lineNum++, Common::String::format(
+		writeLine(_lineNum++, Common::String::format(
 			STRING["dialogs.search.found_gems"].c_str(),
 			c._name,
 			gems));
@@ -391,7 +409,7 @@ void Search::drawItem() {
 			c._backpack.add(itemId, item->_maxCharges);
 
 			// Add line for found item
-			writeString(0, _lineNum++, Common::String::format(
+			writeLine(_lineNum++, Common::String::format(
 				STRING["dialogs.search.found_item"].c_str(),
 				c._name,
 				item->_name.c_str()
@@ -405,8 +423,15 @@ void Search::drawItem() {
 	// At this point we've either displayed the up to 3 item
 	// lines (in addition to gold and/or gems), or the party's
 	// backpacks were completely full up. Wait for 7 seconds
-	_mode = GET_ITEMS_DONE;
+	setMode(GET_ITEMS_DONE);
 	delaySeconds(7);
+}
+
+void Search::setMode(Mode mode) {
+	_mode = mode;
+
+	if (_mode == OPTIONS)
+		openNumbers(3);
 }
 
 } // namespace ViewsEnh
