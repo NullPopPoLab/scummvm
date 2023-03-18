@@ -27,7 +27,7 @@ namespace MM1 {
 namespace ViewsEnh {
 
 #define BUTTON_WIDTH 35
-#define EXIT_X 270
+#define EXIT_X 275
 
 ItemsView::ItemsView(const Common::String &name) : PartyView(name),
 		_buttonsArea(Common::Rect(0, 101, 320, 146)) {
@@ -36,11 +36,14 @@ ItemsView::ItemsView(const Common::String &name) : PartyView(name),
 
 void ItemsView::addButton(int frame, const Common::String &text,
 		Common::KeyCode keycode) {
-	Common::Point pt(_btnText.size() * BUTTON_WIDTH + 5, 0);
-	if (keycode == Common::KEYCODE_ESCAPE)
+	Common::Point pt(_btnText.size() * BUTTON_WIDTH + 5, 101);
+	if (keycode == Common::KEYCODE_ESCAPE) {
 		pt.x = EXIT_X;
+		PartyView::addButton(&g_globals->_escSprites, pt, 0, KEYBIND_ESCAPE);
+	} else {
+		PartyView::addButton(&_btnSprites, pt, frame, keycode);
+	}
 
-	PartyView::addButton(&_btnSprites, pt, frame, keycode);
 	_btnText.push_back(text);
 }
 
@@ -51,42 +54,62 @@ bool ItemsView::msgFocus(const FocusMessage &msg) {
 }
 
 void ItemsView::draw() {
-	// Manually draw a frame for the entire area to avoid
-	// also drawing the buttons
-	frame();
-	fill();
+	// Draw the outer frame and buttons
+	PartyView::draw();
 
-	// Now draw the buttons area
+	// Draw the frame surrounding the buttons area
 	const Common::Rect r = _bounds;
 	_bounds = _buttonsArea;
-	PartyView::draw();
+	frame();
 	_bounds = r;
 
 	// Draw button text
 	setReduced(true);
 	for (uint i = 0; i < _btnText.size(); ++i) {
-		Common::Point pt(i * BUTTON_WIDTH + 5, 122);
+		Common::Point pt(i * BUTTON_WIDTH + 5, 123);
 		if (i == (_btnText.size() - 1))
 			pt.x = EXIT_X;
 
-		writeString(pt.x + 18, pt.y, _btnText[i], ALIGN_MIDDLE);
+		writeString(pt.x + 12, pt.y, _btnText[i], ALIGN_MIDDLE);
 	}
 
-	// TODO: drawing items
+	// List the items
+	for (uint i = 0; i < _items.size(); ++i) {
+		g_globals->_items.getItem(_items[i]);
+		const Item &item = g_globals->_currItem;
+		const Common::String line = Common::String::format(
+			"%d) %s", i + 1,
+			item._name.c_str()
+		);
+		writeLine(2 + i, line, ALIGN_LEFT, 10);
+
+		if (_costMode != NO_COST) {
+			int cost = (_costMode == SHOW_COST) ? item._cost : item.getSellCost();
+			writeLine(2 + i, Common::String::format("%d", cost),
+				ALIGN_RIGHT);
+		}
+	}
+	if (_items.size() == 0)
+		writeLine(2, STRING["enhdialogs.misc.no_items"], ALIGN_LEFT, 10);
 }
 
 bool ItemsView::msgKeypress(const KeypressMessage &msg) {
 	if (endDelay())
 		return true;
 
-	return true;
+	return PartyView::msgKeypress(msg);
 }
 
 bool ItemsView::msgAction(const ActionMessage &msg) {
 	if (endDelay())
 		return true;
 
-	return true;
+	if (msg._action == KEYBIND_ESCAPE) {
+		close();
+		return true;
+	} else {
+		return PartyView::msgAction(msg);
+	}
 }
 
 void ItemsView::timeout() {

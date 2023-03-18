@@ -39,6 +39,9 @@ Umfangreichere Informationen über die Änderungen des aktuellen Codes findest D
    - Sortierung der erzeugten Items in Ultima VI korrigiert.
    - Automatische Ausrüstung von Wurf-Waffen in Ultima VI korrigiert.
 
+ Voyeur:
+   - Unterstützung für die deutsche Fan-Übersetzung hinzugefügt.
+
  Xeen:
    - Die Engine "xeen" wurde für Might & Magic zu "mm" umbenannt.
 
@@ -47,6 +50,9 @@ Umfangreichere Informationen über die Änderungen des aktuellen Codes findest D
 
  Allgemein:
   - Die Wiedergabe-Geschwindigkeit von Theora-Videos wurde korrigiert.
+
+ AGI:
+   - In den Spiel-Optionen kann jetzt wieder ein beliebiger Render-Modus ausgewählt werden.
 
  HDB:
    - Fehler behoben, der verhindert, dass der rote Umschlag mit der Tastatur aufgehoben werden kann.
@@ -60,6 +66,9 @@ Umfangreichere Informationen über die Änderungen des aktuellen Codes findest D
  Sword2:
    - Unterstützung für die GOG.com-Version hinzugefügt.
    - Unterstützung für eine alternative polnische Version hinzugefügt.
+
+ iOS-Portierung:
+   - Die Auswahl des Standard-Themes funktioniert jetzt auch auf modernen Geräten korrekt.
 
  RISC OS-Portierung:
    - Absturz unter RISC OS 5 bei der Nutzung von Spielen, die viel RAM benötigen, behoben.
