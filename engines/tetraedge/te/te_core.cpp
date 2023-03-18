@@ -178,14 +178,17 @@ Common::FSNode TeCore::findFile(const Common::Path &path) const {
 		"iPhone-iPad",							// for iOS Syb 1
 		"iPhone-iPad/HD",						// for iOS Syb 1
 		"iPhone-iPad/HD/Freemium",				// for iOS Syb 1
-		"Android-MacOSX-iPhone-iPad"			// for iOS Syb 1
+		"Android-MacOSX-iPhone-iPad",			// for iOS Syb 1
+		"Freemium-BUKAFree/HD"					// for iOS Syb 1
 	};
 
 	const Common::Path langs[] = {
 		"",
 		language(),
 		"en",
-		"de-es-fr-it-en"
+		"de-es-fr-it-en",
+		"en-es-fr-de-it",
+		"de-en-es-fr-it"
 	};
 
 	// Note: the audio files for a few videos have a weird path

@@ -117,7 +117,7 @@ bool shouldSkipFileForTarget(const std::string &fileID, const std::string &targe
 	// - if the parent directory is "backends/platform/ios7", the file belongs to the iOS target.
 	// - if the parent directory is "/sdl", the file belongs to the macOS target.
 	// - if the file has a suffix, like "_osx", or "_ios", the file belongs to one of the target.
-	// - if the file is an macOS icon file (icns), it belongs to the macOS target.
+	// - if the file is a macOS icon file (icns), it belongs to the macOS target.
 	std::string name, ext;
 	splitFilename(fileName, name, ext);
 
@@ -975,6 +975,7 @@ XcodeProvider::ValueList& XcodeProvider::getResourceFiles(const BuildSetup &setu
 		files.push_back("dists/engine-data/drascula.dat");
 		files.push_back("dists/engine-data/encoding.dat");
 		files.push_back("dists/engine-data/fonts.dat");
+		files.push_back("dists/engine-data/freescape.dat");
 		files.push_back("dists/engine-data/hadesch_translations.dat");
 		files.push_back("dists/engine-data/hugo.dat");
 		files.push_back("dists/engine-data/kyra.dat");
@@ -988,6 +989,7 @@ XcodeProvider::ValueList& XcodeProvider::getResourceFiles(const BuildSetup &setu
 		files.push_back("dists/engine-data/mort.dat");
 		files.push_back("dists/engine-data/nancy.dat");
 		files.push_back("dists/engine-data/neverhood.dat");
+		files.push_back("dists/engine-data/prince_translation.dat");
 		files.push_back("dists/engine-data/queen.tbl");
 		files.push_back("dists/engine-data/sky.cpt");
 		files.push_back("dists/engine-data/supernova.dat");

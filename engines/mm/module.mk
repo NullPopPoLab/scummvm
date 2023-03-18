@@ -139,11 +139,13 @@ MODULE_OBJS += \
 	mm1/views_enh/game_messages.o \
 	mm1/views_enh/game_party.o \
 	mm1/views_enh/game_view.o \
+	mm1/views_enh/items_view.o \
 	mm1/views_enh/main_menu.o \
 	mm1/views_enh/map.o \
 	mm1/views_enh/map_popup.o \
 	mm1/views_enh/party_view.o \
 	mm1/views_enh/protect.o \
+	mm1/views_enh/rest.o \
 	mm1/views_enh/quick_ref.o \
 	mm1/views_enh/scroll_popup.o \
 	mm1/views_enh/scroll_text.o \
@@ -156,8 +158,11 @@ MODULE_OBJS += \
 	mm1/views_enh/trap.o \
 	mm1/views_enh/unlock.o \
 	mm1/views_enh/who_will_try.o \
+	mm1/views_enh/yes_no.o \
 	mm1/views_enh/interactions/interaction.o \
 	mm1/views_enh/interactions/statue.o \
+	mm1/views_enh/locations/blacksmith.o \
+	mm1/views_enh/locations/blacksmith_items.o \
 	mm1/views_enh/locations/inn.o \
 	mm1/views_enh/locations/location.o \
 	mm1/views_enh/locations/market.o \

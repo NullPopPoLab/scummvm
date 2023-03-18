@@ -17,7 +17,9 @@ MODULE_OBJS = \
   action/staticbitmapanim.o \
   action/telephone.o \
   ui/fullscreenimage.o \
+  ui/animatedbutton.o \
   ui/button.o \
+  ui/clock.o \
   ui/inventorybox.o \
   ui/ornaments.o \
   ui/scrollbar.o \

@@ -39,20 +39,31 @@ const ADGameDescription GAME_DESCRIPTIONS[] = {
 		Common::UNK_LANG,
 		Common::kPlatformMacintosh,
 		ADGF_TESTING,
-		GUIO1(GAMEOPTION_CORRECT_MOVIE_ASPECT)
+		GUIO2(GAMEOPTION_CORRECT_MOVIE_ASPECT, GAMEOPTION_RESTORE_SCENES)
 	},
 
-	// iOS release v1.1.3
+	// iOS "free" release v1.1.3.  Not supported as we can't properly support
+	// the in-app purchase to enable the full game.
 	{
 		"syberia",
 		nullptr,
 		AD_ENTRY1s("Syberia", "d:be658efbcf4541f56b656f92a05d271a", 15821120),
 		Common::UNK_LANG,
 		Common::kPlatformIOS,
-		ADGF_TESTING,
+		ADGF_UNSUPPORTED | ADGF_DEMO,
 		GUIO1(GAMEOPTION_CORRECT_MOVIE_ASPECT)
 	},
 
+	// iOS paid release v1.2.  Not yet tested.
+	{
+		"syberia",
+		nullptr,
+		AD_ENTRY1s("Syberia", "d:1425707556476013e859979562c5d753", 15794272),
+		Common::UNK_LANG,
+		Common::kPlatformIOS,
+		ADGF_UNSTABLE,
+		GUIO2(GAMEOPTION_CORRECT_MOVIE_ASPECT, GAMEOPTION_RESTORE_SCENES)
+	},
 
 	// GOG release
 	{
@@ -62,6 +73,17 @@ const ADGameDescription GAME_DESCRIPTIONS[] = {
 		Common::UNK_LANG,
 		Common::kPlatformMacintosh,
 		ADGF_TESTING,
+		GUIO1(GAMEOPTION_CORRECT_MOVIE_ASPECT)
+	},
+
+	// iOS release v1.0.1.  Not yet tested.
+	{
+		"syberia2",
+		nullptr,
+		AD_ENTRY1s("Syberia 2", "d:17d0ded9b87b5096207117bf0cfb5138", 15881248),
+		Common::UNK_LANG,
+		Common::kPlatformIOS,
+		ADGF_UNSTABLE,
 		GUIO1(GAMEOPTION_CORRECT_MOVIE_ASPECT)
 	},
 

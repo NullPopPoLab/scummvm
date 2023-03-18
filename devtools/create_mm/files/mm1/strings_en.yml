@@ -424,6 +424,31 @@ dialogs:
 			15: "thrashes at"
 			99: "shoots at"
 enhdialogs:
+	blacksmith:
+		browse: "\x01""37Browse"
+		for: "for"
+		the: "the"
+		cost: "Cost"
+		gold: "Gold"
+		available: "Available"
+		buy: "Buy"
+		sell: "Sell"
+		for_gold: "for %d gold"
+		areas:
+			weapons: "Weapons"
+			armor: "Armor"
+			accessories: "Accessories"
+			misc: "Misc"
+		buttons:
+			weapons: "\x01""37Weap"
+			armor: "\x01""37Armor"
+			accessories: "A\x01""37cces"
+			misc: "\x01""37Misc"
+			buy: "\x01""37Buy"
+			sell: "\x01""37Sell"
+			buy: "\x01""37Buy"
+			sell: "\x01""37Sell"
+			exit: "Exit"
 	cast_spell:
 		title: "Cast Spell"
 		spell_ready: "Spell Ready:"
@@ -512,7 +537,7 @@ enhdialogs:
 		exit: "Exit Inn"
 		esc: "ESC to go back"
 	location:
-		store: "store"
+		store: "Store"
 		options: "options"
 		options_for: "options for"
 		gold: "Gold"
@@ -540,6 +565,8 @@ enhdialogs:
 			sp: "S.P."
 			ac: "A.C."
 			cond: "Cond"
+	rest:
+		too_dangerous: "Too dangerous to rest here!"		
 	spellbook:
 		title: "Spells for"
 		spell_points: "Spell Pts"

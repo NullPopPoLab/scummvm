@@ -54,7 +54,7 @@ _drawShadows(true) {
 	// the horizontally scrolling scenes don't scroll properly.
 	// For now just default to true.
 	//
-	_ratioStretched = g_engine->gameType() == TetraedgeEngine::kSyberia2;
+	_ratioStretched = true;
 
 	TeCore *core = g_engine->getCore();
 	core->_coreNotReady = true;
@@ -65,7 +65,10 @@ _drawShadows(true) {
 	//
 	core->fileFlagSystemSetFlag("plateform", "MacOSX");
 	core->fileFlagSystemSetFlag("part", "Full");
-	core->fileFlagSystemSetFlag("distributor", "DefaultDistributor");
+	if (g_engine->isGameDemo())
+		core->fileFlagSystemSetFlag("distributor", "Freemium");
+	else
+		core->fileFlagSystemSetFlag("distributor", "DefaultDistributor");
 
 	TeLuaGUI tempGui;
 	tempGui.load("texts/Part.lua");

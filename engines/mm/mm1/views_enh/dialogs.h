@@ -23,12 +23,12 @@
 #define MM1_VIEWS_ENH_DIALOGS_H
 
 #include "mm/mm1/events.h"
-#include "mm/mm1/views_enh/create_characters.h"
-#include "mm/mm1/views/locations/inn.h"
+#include "mm/mm1/views/bash.h"
 #include "mm/mm1/views/title.h"
 #include "mm/mm1/views_enh/character_info.h"
 #include "mm/mm1/views_enh/character_select.h"
 #include "mm/mm1/views_enh/characters.h"
+#include "mm/mm1/views_enh/create_characters.h"
 #include "mm/mm1/views_enh/exchange.h"
 #include "mm/mm1/views_enh/game.h"
 #include "mm/mm1/views_enh/game_messages.h"
@@ -36,12 +36,15 @@
 #include "mm/mm1/views_enh/map_popup.h"
 #include "mm/mm1/views_enh/protect.h"
 #include "mm/mm1/views_enh/quick_ref.h"
+#include "mm/mm1/views_enh/rest.h"
 #include "mm/mm1/views_enh/search.h"
 #include "mm/mm1/views_enh/title.h"
 #include "mm/mm1/views_enh/trap.h"
 #include "mm/mm1/views_enh/unlock.h"
 #include "mm/mm1/views_enh/who_will_try.h"
 #include "mm/mm1/views_enh/interactions/statue.h"
+#include "mm/mm1/views_enh/locations/blacksmith_items.h"
+#include "mm/mm1/views_enh/locations/blacksmith.h"
 #include "mm/mm1/views_enh/locations/inn.h"
 #include "mm/mm1/views_enh/locations/market.h"
 #include "mm/mm1/views_enh/locations/tavern.h"
@@ -57,6 +60,8 @@ namespace ViewsEnh {
 struct Dialogs {
 private:
 	ViewsEnh::Interactions::Statue _statue;
+	ViewsEnh::Locations::Blacksmith _blacksmith;
+	ViewsEnh::Locations::BlacksmithItems _blacksmithItems;
 	ViewsEnh::Locations::Inn _inn;
 	ViewsEnh::Locations::Market _market;
 	ViewsEnh::Locations::Tavern _tavern;
@@ -75,11 +80,13 @@ private:
 	ViewsEnh::MapPopup _mapPopup;
 	ViewsEnh::Protect _protect;
 	ViewsEnh::QuickRef _quickRef;
+	ViewsEnh::Rest _rest;
 	ViewsEnh::Search _search;
 	ViewsEnh::Title _title;
 	ViewsEnh::Trap _trap;
 	ViewsEnh::Unlock _unlock;
 	ViewsEnh::WhoWillTry _whoWillTry;
+	Views::Bash _bash;
 public:
 	Dialogs() {}
 };

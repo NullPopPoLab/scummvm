@@ -531,6 +531,8 @@ private:
 	void scriptOpStatic(ScriptArg_t arg);
 	void scriptOpVarLoad(ScriptArg_t arg);
 	void scriptOpVarStore(ScriptArg_t arg);
+	void scriptOpVarGlobalLoad(ScriptArg_t arg);
+	void scriptOpVarGlobalStore(ScriptArg_t arg);
 
 	void scriptOpItemCheck(ScriptArg_t arg);
 	void scriptOpItemRemove(ScriptArg_t arg);
@@ -576,6 +578,7 @@ private:
 	void scriptOpRandom(ScriptArg_t arg);
 	void scriptOpDrop(ScriptArg_t arg);
 	void scriptOpDup(ScriptArg_t arg);
+	void scriptOpSwap(ScriptArg_t arg);
 	void scriptOpSay1(ScriptArg_t arg);
 	void scriptOpSay3(ScriptArg_t arg);
 	void scriptOpSay3Get(ScriptArg_t arg);
@@ -644,13 +647,13 @@ private:
 	uint _roomNumber;	// Room number can be changed independently of the loaded room, the screen doesn't change until a command changes it
 	uint _screenNumber;
 	uint _direction;
-	uint _highPrecisionDirection;
+	//uint _highPrecisionDirection;
 
 	GyroState _gyros;
 
 	AnimationDef _panLeftAnimationDef;
 	AnimationDef _panRightAnimationDef;
-	bool _havePanAnimations;
+	bool _haveHorizPanAnimations;
 	bool _havePanUpFromDirection[kNumDirections];
 	bool _havePanDownFromDirection[kNumDirections];
 
@@ -710,7 +713,7 @@ private:
 
 	Common::Array<FrameData> _frameData;
 	Common::Array<FrameData2> _frameData2;
-	uint32 _loadedArea;
+	//uint32 _loadedArea;
 
 	Common::Array<Common::String> _animDefNames;
 	Common::HashMap<Common::String, uint> _animDefNameToIndex;

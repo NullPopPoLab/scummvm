@@ -621,7 +621,7 @@ void ScummEngine_v6::o6_gt() {
 	int a = pop();
 	int b = pop();
 
-	// WORKAROUND: In Football 2002, when hosting an Network game, it would eventually timeout,
+	// WORKAROUND: In Football 2002, when hosting a Network game, it would eventually timeout,
 	// which causes the game to stop hosting and query for sessions again.
 	//
 	// [016C] (39)     localvar8++
@@ -2052,7 +2052,7 @@ void ScummEngine_v6::o6_actorOps() {
 	case SO_ACTOR_TURN:										/* turn to direction */
 		a->turnToDirection(pop());
 		break;
-	case SO_ACTOR_WALK_PAUSE: 
+	case SO_ACTOR_WALK_PAUSE:
 		a->_moving |= MF_FROZEN;
 		break;
 	case SO_ACTOR_WALK_RESUME:

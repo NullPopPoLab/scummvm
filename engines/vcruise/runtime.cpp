@@ -27,7 +27,6 @@
 #include "common/random.h"
 #include "common/system.h"
 #include "common/stream.h"
-#include "common/translation.h"
 
 #include "graphics/cursorman.h"
 #include "graphics/font.h"
@@ -164,6 +163,8 @@ void SfxData::load(Common::SeekableReadStream &stream, Audio::Mixer *mixer) {
 	Common::INIFile iniFile;
 
 	iniFile.allowNonEnglishCharacters();
+	iniFile.suppressValuelessLineWarning();
+
 	if (!iniFile.loadFromStream(stream))
 		warning("SfxData::load failed to parse INI file");
 
@@ -347,13 +348,13 @@ InventoryItem::InventoryItem() : itemID(0), highlighted(false) {
 }
 
 Runtime::Runtime(OSystem *system, Audio::Mixer *mixer, const Common::FSNode &rootFSNode, VCruiseGameID gameID)
-	: _system(system), _mixer(mixer), _roomNumber(1), _screenNumber(0), _direction(0), _havePanAnimations(0), _loadedRoomNumber(0), _activeScreenNumber(0),
+	: _system(system), _mixer(mixer), _roomNumber(1), _screenNumber(0), _direction(0), _haveHorizPanAnimations(false), _loadedRoomNumber(0), _activeScreenNumber(0),
 	  _gameState(kGameStateBoot), _gameID(gameID), _havePendingScreenChange(false), _forceScreenChange(false), _havePendingReturnToIdleState(false), _havePendingCompletionCheck(false),
 	  _scriptNextInstruction(0), _escOn(false), _debugMode(false), _panoramaDirectionFlags(0),
 	  _loadedAnimation(0), _animPendingDecodeFrame(0), _animDisplayingFrame(0), _animFirstFrame(0), _animLastFrame(0), _animStopFrame(0),
 	  _animFrameRateLock(0), _animStartTime(0), _animFramesDecoded(0), _animDecoderState(kAnimDecoderStateStopped),
 	  _animPlayWhileIdle(false), _idleIsOnInteraction(false), _idleHaveClickInteraction(false), _idleHaveDragInteraction(false), _idleInteractionID(0), _haveIdleStaticAnimation(false),
-	  _loadedArea(0), _lmbDown(false), _lmbDragging(false), _lmbReleaseWasClick(false), _lmbDownTime(0),
+	  /*_loadedArea(0), */_lmbDown(false), _lmbDragging(false), _lmbReleaseWasClick(false), _lmbDownTime(0),
 	  _panoramaState(kPanoramaStateInactive),
 	  _listenerX(0), _listenerY(0), _listenerAngle(0) {
 
@@ -880,7 +881,6 @@ void Runtime::continuePlayingAnimation(bool loop, bool useStopFrame, bool &outAn
 				// if ((millis - startTime) / 1000 * frameRate) >= framesDecoded
 				if ((millis - _animStartTime) * static_cast<uint64>(_animFrameRateLock) >= (static_cast<uint64>(_animFramesDecoded) * 1000u))
 					needNewFrame = true;
-				debug("FPS lock: New frame at %u millis and %u decoded? %s", static_cast<uint>(millis - _animStartTime), static_cast<uint>(_animFramesDecoded), needNewFrame ? "yes" : "no");
 			} else {
 				if (_animDecoder->getTimeToNextFrame() == 0)
 					needNewFrame = true;
@@ -1022,6 +1022,8 @@ bool Runtime::runScript() {
 			DISPATCH_OP(Static);
 			DISPATCH_OP(VarLoad);
 			DISPATCH_OP(VarStore);
+			DISPATCH_OP(VarGlobalLoad);
+			DISPATCH_OP(VarGlobalStore);
 			DISPATCH_OP(ItemCheck);
 			DISPATCH_OP(ItemRemove);
 			DISPATCH_OP(ItemHighlightSet);
@@ -1065,6 +1067,7 @@ bool Runtime::runScript() {
 			DISPATCH_OP(Random);
 			DISPATCH_OP(Drop);
 			DISPATCH_OP(Dup);
+			DISPATCH_OP(Swap);
 			DISPATCH_OP(Say1);
 			DISPATCH_OP(Say3);
 			DISPATCH_OP(Say3Get);
@@ -1407,7 +1410,7 @@ void Runtime::changeToScreen(uint roomNumber, uint screenNumber) {
 			}
 		}
 
-		_havePanAnimations = false;
+		_haveHorizPanAnimations = false;
 		for (uint i = 0; i < kNumDirections; i++) {
 			_havePanUpFromDirection[i] = false;
 			_havePanDownFromDirection[i] = false;
@@ -1507,28 +1510,32 @@ bool Runtime::dischargeIdleMouseMove() {
 		uint interactionID = 0;
 
 		Common::Point panRelMouse = _mousePos - _panoramaAnchor;
-		if (_havePanAnimations) {
+		if (_haveHorizPanAnimations) {
 			if (panRelMouse.x <= -kPanoramaPanningMarginX)
 				interactionID = kPanLeftInteraction;
 			else if (panRelMouse.x >= kPanoramaPanningMarginX)
 				interactionID = kPanRightInteraction;
-			else if (panRelMouse.y <= -kPanoramaPanningMarginY)
+		}
+
+		if (!interactionID) {
+			if (_havePanUpFromDirection[_direction] && panRelMouse.y <= -kPanoramaPanningMarginY) {
 				interactionID = kPanUpInteraction;
-			else if (panRelMouse.y >= kPanoramaPanningMarginY)
+			} else if (_havePanDownFromDirection[_direction] && panRelMouse.y >= kPanoramaPanningMarginY) {
 				interactionID = kPanDownInteraction;
+			}
+		}
 
-			if (interactionID) {
-				// If there's an interaction script for this direction, execute it
-				Common::SharedPtr<Script> script = findScriptForInteraction(interactionID);
+		if (interactionID) {
+			// If there's an interaction script for this direction, execute it
+			Common::SharedPtr<Script> script = findScriptForInteraction(interactionID);
 
-				if (script) {
-					resetInventoryHighlights();
+			if (script) {
+				resetInventoryHighlights();
 
-					ScriptEnvironmentVars vars;
-					vars.panInteractionID = interactionID;
-					activateScript(script, vars);
-					return true;
-				}
+				ScriptEnvironmentVars vars;
+				vars.panInteractionID = interactionID;
+				activateScript(script, vars);
+				return true;
 			}
 		}
 	}
@@ -1897,8 +1904,11 @@ void Runtime::updateSounds(uint32 timestamp) {
 
 			if (snd.volume != newVolume) {
 				snd.volume = newVolume;
-				if (snd.player)
-					snd.player->setVolume(snd.volume);
+
+				if (snd.player) {
+					computeEffectiveVolumeAndBalance(snd);
+					snd.player->setVolumeAndBalance(snd.effectiveVolume, snd.effectiveBalance);
+				}
 			}
 		}
 	}
@@ -2054,7 +2064,7 @@ bool Runtime::parseIndexDef(IndexParseType parseType, uint roomNumber, const Com
 		uint lastFrame = 0;
 		if (sscanf(value.c_str(), "%i, %u, %u", &animNum, &firstFrame, &lastFrame) != 3)
 			error("Malformed room animation def '%s'", value.c_str());
-		
+
 		AnimationDef &animDef = _roomDefs[roomNumber]->animations[key];
 		animDef.animNum = animNum;
 		animDef.firstFrame = firstFrame;
@@ -2086,7 +2096,7 @@ bool Runtime::parseIndexDef(IndexParseType parseType, uint roomNumber, const Com
 
 		if (!sscanf(value.c_str(), "%u", &varSlot))
 			error("Malformed var def '%s'", value.c_str());
-			
+
 		_roomDefs[roomNumber]->vars[key] = varSlot;
 	} break;
 	case kIndexParseTypeVRoom: {
@@ -2189,7 +2199,7 @@ Common::SharedPtr<Script> Runtime::findScriptForInteraction(uint interactionID) 
 void Runtime::detectPanoramaDirections() {
 	_panoramaDirectionFlags = 0;
 
-	if (_havePanAnimations)
+	if (_haveHorizPanAnimations)
 		_panoramaDirectionFlags |= kPanoramaHorizFlags;
 
 	if (_havePanDownFromDirection[_direction])
@@ -2210,7 +2220,7 @@ void Runtime::panoramaActivate() {
 	_panoramaAnchor = _mousePos;
 
 	uint cursorID = 0;
-	if (_havePanAnimations) {
+	if (_haveHorizPanAnimations || _havePanUpFromDirection[_direction] || _havePanDownFromDirection[_direction]) {
 		uint panCursor = 0;
 		if (_panoramaDirectionFlags & kPanoramaHorizFlags)
 			panCursor |= kPanCursorDraggableHoriz;
@@ -2230,7 +2240,7 @@ void Runtime::panoramaActivate() {
 }
 
 bool Runtime::computeFaceDirectionAnimation(uint desiredDirection, const AnimationDef *&outAnimDef, uint &outInitialFrame, uint &outStopFrame) {
-	if (_direction == desiredDirection || !_havePanAnimations)
+	if (_direction == desiredDirection || !_haveHorizPanAnimations)
 		return false;
 
 	uint leftPanDistance = ((_direction + kNumDirections) - desiredDirection) % kNumDirections;
@@ -2590,7 +2600,7 @@ void Runtime::scriptOpRotate(ScriptArg_t arg) {
 
 	_panLeftAnimationDef = stackArgsToAnimDef(stackArgs + 0);
 	_panRightAnimationDef = stackArgsToAnimDef(stackArgs + kAnimDefStackArgs);
-	_havePanAnimations = true;
+	_haveHorizPanAnimations = true;
 }
 
 void Runtime::scriptOpAngle(ScriptArg_t arg) {
@@ -2680,9 +2690,9 @@ void Runtime::scriptOpAnimR(ScriptArg_t arg) {
 		isRight = true;
 	}
 
-	
+
 	uint cursorID = 0;
-	if (_havePanAnimations) {
+	if (_haveHorizPanAnimations) {
 		uint panCursor = 0;
 		if (_panoramaDirectionFlags & kPanoramaHorizFlags)
 			panCursor |= kPanCursorDraggableHoriz;
@@ -2815,7 +2825,7 @@ void Runtime::scriptOpStatic(ScriptArg_t arg) {
 	changeAnimation(animDef, animDef.lastFrame, false);
 
 	_havePendingReturnToIdleState = true;
-	_havePanAnimations = false;
+	_haveHorizPanAnimations = false;
 	_haveIdleStaticAnimation = true;
 	_idleCurrentStaticAnimation = animDef.animName;
 
@@ -2838,6 +2848,26 @@ void Runtime::scriptOpVarStore(ScriptArg_t arg) {
 	TAKE_STACK(2);
 
 	uint32 varID = (static_cast<uint32>(_roomNumber) << 16) | static_cast<uint32>(stackArgs[1]);
+
+	_variables[varID] = stackArgs[0];
+}
+
+void Runtime::scriptOpVarGlobalLoad(ScriptArg_t arg) {
+	TAKE_STACK(1);
+
+	uint32 varID = static_cast<uint32>(stackArgs[0]);
+
+	Common::HashMap<uint32, int32>::const_iterator it = _variables.find(varID);
+	if (it == _variables.end())
+		_scriptStack.push_back(0);
+	else
+		_scriptStack.push_back(it->_value);
+}
+
+void Runtime::scriptOpVarGlobalStore(ScriptArg_t arg) {
+	TAKE_STACK(2);
+
+	uint32 varID = static_cast<uint32>(stackArgs[1]);
 
 	_variables[varID] = stackArgs[0];
 }
@@ -3197,6 +3227,13 @@ void Runtime::scriptOpDup(ScriptArg_t arg) {
 	_scriptStack.push_back(stackArgs[0]);
 }
 
+void Runtime::scriptOpSwap(ScriptArg_t arg) {
+	TAKE_STACK(2);
+
+	_scriptStack.push_back(stackArgs[1]);
+	_scriptStack.push_back(stackArgs[0]);
+}
+
 void Runtime::scriptOpSay1(ScriptArg_t arg) {
 	TAKE_STACK(3);
 
@@ -3435,7 +3472,7 @@ void Runtime::scriptOpGoto(ScriptArg_t arg) {
 	uint newInteraction = static_cast<uint>(stackArgs[0]);
 
 	Common::SharedPtr<Script> newScript = nullptr;
-	
+
 	if (_scriptSet) {
 		RoomScriptSetMap_t::const_iterator roomScriptIt = _scriptSet->roomScripts.find(_roomNumber);
 		if (roomScriptIt != _scriptSet->roomScripts.end()) {

@@ -39,6 +39,9 @@ For a more comprehensive changelog of the latest experimental code, see:
    - Fix ordering of generated items in Ultima VI
    - Fix auto-readying throwing weapons in Ultima VI
 
+ Voyeur:
+   - Added support for German fan translation.
+
  Xeen:
    - Renamed 'xeen' engine to 'mm' for Might & Magic.
 
@@ -47,6 +50,9 @@ For a more comprehensive changelog of the latest experimental code, see:
 
  General:
   - Fixed playback speed for Theora videos.
+
+ AGI:
+   - Restored possibility to pick arbitrary render mode in Game Options.
 
  HDB:
    - Fixed bug with inability to pick up red envelope with keyboard.
@@ -60,6 +66,9 @@ For a more comprehensive changelog of the latest experimental code, see:
  Sword2:
    - Added support for GOG.com version.
    - Added detection for alternate Polish version.
+
+ iOS port:
+   - Fix default theme selection on modern devices.
 
  RISC OS port:
    - Fixed crash on RISC OS 5 with games that require lots of RAM.

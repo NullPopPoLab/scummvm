@@ -55,6 +55,7 @@ namespace UI {
 class Button;
 class ViewportOrnaments;
 class TextboxOrnaments;
+class Clock;
 }
 
 namespace State {
@@ -75,10 +76,6 @@ class Scene : public State, public Common::Singleton<Scene> {
 	friend class Nancy::NancyEngine;
 
 public:
-	static const byte kPlayerDay		= 0;
-	static const byte kPlayerNight		= 1;
-	static const byte kPlayerDuskDawn	= 2;
-
 	enum GameStateChange : byte {
 		kHelpMenu = 1 << 0,
 		kMainMenu = 1 << 1,
@@ -121,7 +118,7 @@ public:
 	void onStateEnter() override;
 	void onStateExit() override;
 
-	void changeScene(uint16 id, uint16 frame, uint16 verticalOffset, byte continueSceneSound);
+	void changeScene(uint16 id, uint16 frame, uint16 verticalOffset, byte continueSceneSound, int8 paletteID = -1);
 	void changeScene(const SceneChangeDescription &sceneDescription);
 	void pushScene();
 	void popScene();
@@ -130,6 +127,8 @@ public:
 	void unpauseSceneSpecificSounds();
 
 	void setPlayerTime(Time time, byte relative);
+	Time getPlayerTime() const { return _timers.playerTime; }
+	byte getPlayerTOD() const;
 
 	void addItemToInventory(uint16 id);
 	void removeItemFromInventory(uint16 id, bool pickUp = true);
@@ -184,6 +183,7 @@ private:
 	void init();
 	void load();
 	void run();
+	void handleInput();
 
 	void initStaticData();
 
@@ -214,7 +214,6 @@ private:
 		bool timerIsActive = false;
 		Time playerTime; // In-game time of day, adds a minute every 5 seconds
 		Time playerTimeNextMinute; // Stores the next tick count until we add a minute to playerTime
-		byte timeOfDay = kPlayerDay;
 	};
 
 	struct PlayFlags {
@@ -247,6 +246,7 @@ private:
 
 	UI::ViewportOrnaments *_viewportOrnaments;
 	UI::TextboxOrnaments *_textboxOrnaments;
+	UI::Clock *_clock;
 
 	// Data
 	SceneState _sceneState;
