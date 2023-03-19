@@ -86,6 +86,40 @@ else
 	LS := true
 endif
 
+# Raspberry Pi 1
+ifeq ($(platform), rpi1)
+   TARGET = $(TARGET_NAME)_libretro.so
+   DEFINES += -fPIC -D_ARM_ASSEM_ -DUSE_CXX11 -marm -DARM
+   LDFLAGS += -shared -Wl,--version-script=$(ROOT_PATH)/link.T -fPIC
+   CFLAGS += -fPIC -marm -mcpu=arm1176jzf-s -mfpu=vfp -mfloat-abi=hard
+   CFLAGS += -fomit-frame-pointer -ffast-math
+   CXXFLAGS = $(CFLAGS) -frtti -std=c++11
+
+# Raspberry Pi 2
+else ifeq ($(platform), rpi2)
+   TARGET = $(TARGET_NAME)_libretro.so
+   DEFINES += -fPIC -D_ARM_ASSEM_ -DUSE_CXX11 -marm -DARM
+   LDFLAGS += -shared -Wl,--version-script=$(ROOT_PATH)/link.T -fPIC
+   CFLAGS += -fPIC -marm -mcpu=cortex-a7 -mfpu=neon-vfpv4 -mfloat-abi=hard
+   CFLAGS += -fomit-frame-pointer -ffast-math
+   CXXFLAGS = $(CFLAGS) -frtti -std=c++11
+
+# Raspberry Pi 3
+else ifeq ($(platform), rpi3)
+   TARGET = $(TARGET_NAME)_libretro.so
+   DEFINES += -fPIC -D_ARM_ASSEM_ -DUSE_CXX11 -marm -DARM
+   LDFLAGS += -shared -Wl,--version-script=$(ROOT_PATH)/link.T -fPIC
+   CFLAGS += -fPIC -marm -mtune=cortex-a53 -mfpu=neon-fp-armv8 -mfloat-abi=hard
+   CFLAGS += -fomit-frame-pointer -ffast-math
+   CXXFLAGS = $(CFLAGS) -frtti -std=c++11
+
+# Raspberry Pi 3 (64 bit)
+else ifeq ($(platform), rpi3_64)
+    TARGET   = $(TARGET_NAME)_libretro.so
+    DEFINES += -fPIC -D_ARM_ASSEM_ -DUSE_CXX11 -DARM
+    LDFLAGS += -shared -Wl,--version-script=$(ROOT_PATH)/link.T -fPIC
+endif
+
 #######################################################################
 # Misc stuff - you should never have to edit this                     #
 #######################################################################
